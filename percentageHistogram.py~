@@ -15,9 +15,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 
-pathT = 'fakedata/P1'
-#pathMetric = 'home/stefano/Metric'
-pathI = 'fakedata/P2'
+pathT = '/home/stefano/P1'
+pathMetric = 'home/stefano/Metric'
+pathI = '/home/stefano/P2'
 #data of the relative abundance
 data1 = np.loadtxt(pathT)
 data2 = data1.T
