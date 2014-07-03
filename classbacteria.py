@@ -4,7 +4,17 @@ import random
 
 class BacteriaGraph(object):
 	"""
-	
+	this class can be used for receive, as a output,
+	some graphics which analyze the data:
+	*percentagehistogramm:
+		from the table it can create the percentage 
+		of the presence of the bacteria for each sample
+	*metricsplot
+		from the metrics it create a plot that shows 
+		the precision of the results of the machine 
+		learning. "Style" can be 1, for only the first 
+		10 misurations, 2, for 100, 3, for 1000, 
+		or 4, for all. 
 	"""
 	def __init__(self, srcTable='sourcetable.txt', srcInfo='sourceinfo.txt', srcMetrics='sourcemetrics.txt', srcFeatureList='sourcefeaturelist.txt', srcStability='sourcestability.txt'):
 		self.srcTable = srcTable
@@ -12,12 +22,15 @@ class BacteriaGraph(object):
 		self.scrMetrics = srcMetrics
 		self.scrFL = scrFeaturList
 		self.srcStability = scrStability
-		#FIXME
+		loadData()
 	def _loadData(self):
-		self.data1 = np.loadtxt(self.srcTable)
-		self.data2 = self.data1.T
-		self.samplesCount = self.data1.shape[0]
-		self.bacteriaCount = self.data1.shape[1]
+		if (os.path.lexists(srcTable) = True and os.path.lexists(srcInfo) = True and os.path.lexists(srcMetrics) = True and os.path.lexists(srcFeatureList) = True and os.path.lexists(srcStability) = True):
+			self.data1 = np.loadtxt(self.srcTable)
+			self.data2 = self.data1.T
+			self.samplesCount = self.data1.shape[0]
+			self.bacteriaCount = self.data1.shape[1]
+		else:
+			raise Exception("wrong source file insert")		
 	def percentagehistogramm(self):
 		#CREATION OF THE PERCENTAGE HISTOGRAMM OF THE DATA WITH RANDOM COLORS
 		rangeNum = np.arange(1, samplesCount + 1, 1)
@@ -42,3 +55,16 @@ class BacteriaGraph(object):
 		plt.ylabel('Bacteria')
 		plt.title('Histogramm of bacteria percentage')	
 		plt.show()
+	def metricsplot(self, style=1):
+		self.style = style
+		
+
+
+if __name__ == "__main__":
+	pass 
+
+
+
+
+
+		
