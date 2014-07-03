@@ -2,6 +2,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 
+def get_randColor():
+	#RETURN A EXADECIMAL RANDOM COLOR ie #ff45e2
+	r = lambda: random.randint(0, 255)
+	return '#%02X%02X%02X' % (r(), r(), r())
+
 class BacteriaGraph(object):
 	"""
 	this class can be used for receive, as a output,
@@ -19,10 +24,10 @@ class BacteriaGraph(object):
 	def __init__(self, srcTable='sourcetable.txt', srcInfo='sourceinfo.txt', srcMetrics='sourcemetrics.txt', srcFeatureList='sourcefeaturelist.txt', srcStability='sourcestability.txt'):
 		self.srcTable = srcTable
 		self.srcInfo = srcInfo
-		self.scrMetrics = srcMetrics
-		self.scrFL = scrFeaturList
-		self.srcStability = scrStability
-		loadData()
+		self.srcMetrics = srcMetrics
+		self.srcFeatureList = srcFeatureList
+		self.srcStability = srcStability
+		self._loadData()
 	def _loadData(self):
 		#if (os.path.lexists(srcTable) = True and os.path.lexists(srcInfo) = True and os.path.lexists(srcMetrics) = True and os.path.lexists(srcFeatureList) = True and os.path.lexists(srcStability) = True):
 			self.data1 = np.loadtxt(self.srcTable)
@@ -30,20 +35,20 @@ class BacteriaGraph(object):
 			self.samplesCount = self.data1.shape[0]
 			self.bacteriaCount = self.data1.shape[1]
 			self.metrics = np.loadtxt(self.srcMetrics, skiprows = 2)
-		else:
-			raise Exception("wrong source file insert")		
+		#else:
+			#raise Exception("wrong source file insert")		
 	def percentagehistogramm(self):
 		#CREATION OF THE PERCENTAGE HISTOGRAMM OF THE DATA WITH RANDOM COLORS
-		rangeNum = np.arange(1, samplesCount + 1, 1)
+		rangeNum = np.arange(1, self.samplesCount + 1, 1)
 		width = 0.8
-		bottom = [0] * samplesCount
-		colors = [0] * bacteriaCount
+		bottom = [0] * self.samplesCount
+		colors = [0] * self.bacteriaCount
 		n = 0
-		for i in data2:
+		for i in self.data2:
 			if n != 0:
 				#sum the botton at the last bottom
 				cont = 0
-				while cont < samplesCount:
+				while cont < self.samplesCount:
 	  	      			bottom[cont] = bottom[cont] + hist[cont]
 					cont += 1
 			hist = i
@@ -55,45 +60,50 @@ class BacteriaGraph(object):
     		plt.xlabel('Samples')
 		plt.ylabel('Bacteria')
 		plt.title('Histogramm of bacteria percentage')	
-		plt.show()
-
+		plt.savefig('histplot', format = 'png')
 	def metricsplot(self, style=1):
+		plt.close("all")
 		self.style = style
 		colRep = 0
 		colMMC = 1
 		colMMCmin = 2
 		colMMCmax = 3
 		numData = 3694 #numero di analisi
+		rowData = self.metrics
 		if style == 1:
-			metrics = metrics[:10]
+			rowData = self.metrics[:10]
 			numData = 10
-		else if style == 2:
-			metrics = metrics[:100]
+		elif style == 2:
+			rowData = self.metrics[:100]
 			numData = 100
-		else if style == 3
-			metrics = metrics[:1000]
-			numData
-		arrMMC = np.zeros((1, numData))
-		arrMMCerr = np.zeros((1, numData))
-		arrRep = np.zeros((1, numData))
+		elif style == 3:
+			rowData = self.metrics[:1000]
+			numData = 1000
+		arrMCC = np.zeros(numData + 1)
+		arrMCCerr = np.zeros(numData + 1)
+		arrRep = np.zeros(numData + 1)
 		n = 0
-		for i in metrics:
+		for i in rowData:
 			arr = i
 			arrRep[n] = arr[colRep]
-			arrMMC[n] = arr[colMMC]
-			arrMMCerr[n] = (arr[colMMCmax] + arr[colMMCmin])/2
+			arrMCC[n] = arr[colMMC]
+			arrMCCerr[n] = (arr[colMMCmax] - arr[colMMCmin])/2
 			n += 1
-		plt.errorbar(arrRep, arrMMC, xerr=0, yerr=arrMCCerr)
-		if numData != 1:
-			ax.set_yscale('log')
-		plt.show
+		plt.errorbar(arrRep, arrMCC, xerr=0, yerr=arrMCCerr)
+		plt.xlim((0.5, numData + 1))
+		plt.subplot().set_xscale("log")
+		plt.savefig('metricsplot' + str(style), format = 'png')
+		plt.clf()
 
 
 if __name__ == "__main__":
-	pass 
 
 
-
-
+	a=BacteriaGraph('fakedata/P1', 'fakedata/P2', 'fakedata/metrics.txt')
+	a.percentagehistogramm()
+	a.metricsplot(3)
+	a.metricsplot(2)
+	a.metricsplot(4)
+	a.metricsplot(1)
 
 		
