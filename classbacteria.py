@@ -24,11 +24,12 @@ class BacteriaGraph(object):
 		self.srcStability = scrStability
 		loadData()
 	def _loadData(self):
-		if (os.path.lexists(srcTable) = True and os.path.lexists(srcInfo) = True and os.path.lexists(srcMetrics) = True and os.path.lexists(srcFeatureList) = True and os.path.lexists(srcStability) = True):
+		#if (os.path.lexists(srcTable) = True and os.path.lexists(srcInfo) = True and os.path.lexists(srcMetrics) = True and os.path.lexists(srcFeatureList) = True and os.path.lexists(srcStability) = True):
 			self.data1 = np.loadtxt(self.srcTable)
 			self.data2 = self.data1.T
 			self.samplesCount = self.data1.shape[0]
 			self.bacteriaCount = self.data1.shape[1]
+			self.metrics = np.loadtxt(self.srcMetrics)
 		else:
 			raise Exception("wrong source file insert")		
 	def percentagehistogramm(self):
@@ -57,7 +58,12 @@ class BacteriaGraph(object):
 		plt.show()
 	def metricsplot(self, style=1):
 		self.style = style
-		
+		colRep = 0
+		colMMC = 1
+		colMMCmin = 2
+		colMMCmax = 3
+		if style == 1:
+			pass
 
 
 if __name__ == "__main__":
