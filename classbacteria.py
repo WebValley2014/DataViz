@@ -29,7 +29,7 @@ class BacteriaGraph(object):
 			self.data2 = self.data1.T
 			self.samplesCount = self.data1.shape[0]
 			self.bacteriaCount = self.data1.shape[1]
-			self.metrics = np.loadtxt(self.srcMetrics)
+			self.metrics = np.loadtxt(self.srcMetrics, skiprows = 2)
 		else:
 			raise Exception("wrong source file insert")		
 	def percentagehistogramm(self):
@@ -56,14 +56,37 @@ class BacteriaGraph(object):
 		plt.ylabel('Bacteria')
 		plt.title('Histogramm of bacteria percentage')	
 		plt.show()
+
 	def metricsplot(self, style=1):
 		self.style = style
 		colRep = 0
 		colMMC = 1
 		colMMCmin = 2
 		colMMCmax = 3
+		numData = 3694 #numero di analisi
 		if style == 1:
-			pass
+			metrics = metrics[:10]
+			numData = 10
+		else if style == 2:
+			metrics = metrics[:100]
+			numData = 100
+		else if style == 3
+			metrics = metrics[:1000]
+			numData
+		arrMMC = np.zeros((1, numData))
+		arrMMCerr = np.zeros((1, numData))
+		arrRep = np.zeros((1, numData))
+		n = 0
+		for i in metrics:
+			arr = i
+			arrRep[n] = arr[colRep]
+			arrMMC[n] = arr[colMMC]
+			arrMMCerr[n] = (arr[colMMCmax] + arr[colMMCmin])/2
+			n += 1
+		plt.errorbar(arrRep, arrMMC, xerr=0, yerr=arrMCCerr)
+		if numData != 1:
+			ax.set_yscale('log')
+		plt.show
 
 
 if __name__ == "__main__":
