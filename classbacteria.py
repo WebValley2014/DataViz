@@ -14,16 +14,20 @@ class BacteriaGraph(object):
 	*percentagehistogramm:
 		from the table it can create the percentage 
 		of the presence of the bacteria for each sample
-	*metricsplot
+	*metricsplot:
 		from the metrics it create a plot that shows 
 		the precision of the results of the machine 
 		learning. "Style" can be 1, for only the first 
 		10 misurations, 2, for 100, 3, for 1000, 
-		or 4, for all. 
+		or 4, for all.
+	*classbacteriahistogramm:
+		from the class.txt it produce a histogramm which 
+		represent the average of the percentage of 
+		the bacteria for each class
 	"""
-	def __init__(self, srcTable='sourcetable.txt', srcInfo='sourceinfo.txt', srcMetrics='sourcemetrics.txt', srcFeatureList='sourcefeaturelist.txt', srcStability='sourcestability.txt'):
+	def __init__(self, srcTable='sourcetable.txt', srcClass='sourceclass.txt', srcMetrics='sourcemetrics.txt', srcFeatureList='sourcefeaturelist.txt', srcStability='sourcestability.txt'):
 		self.srcTable = srcTable
-		self.srcInfo = srcInfo
+		self.srcClass = srcClass
 		self.srcMetrics = srcMetrics
 		self.srcFeatureList = srcFeatureList
 		self.srcStability = srcStability
@@ -35,6 +39,7 @@ class BacteriaGraph(object):
 			self.samplesCount = self.data1.shape[0]
 			self.bacteriaCount = self.data1.shape[1]
 			self.metrics = np.loadtxt(self.srcMetrics, skiprows = 2)
+			self.classes = np.loadtxt(self.srcClass) 
 		#else:
 			#raise Exception("wrong source file insert")		
 	def percentagehistogramm(self):
@@ -62,7 +67,6 @@ class BacteriaGraph(object):
 		plt.title('Histogramm of bacteria percentage')	
 		plt.savefig('histplot', format = 'png')
 	def metricsplot(self, style=1):
-		plt.close("all")
 		self.style = style
 		colRep = 0
 		colMMC = 1
@@ -92,15 +96,17 @@ class BacteriaGraph(object):
 		plt.errorbar(arrRep, arrMCC, xerr=0, yerr=arrMCCerr)
 		plt.xlim((0.5, numData + 1))
 		plt.subplot().set_xscale("log")
-		plt.savefig('metricsplot' + str(style), format = 'png')
+		plt.savefig('graphs/metricsplot' + str(style), format = 'png')
 		plt.clf()
+	def classbacteriahistogramm():
+		
 
 
 if __name__ == "__main__":
 
 
 	a=BacteriaGraph('fakedata/P1', 'fakedata/P2', 'fakedata/metrics.txt')
-	a.percentagehistogramm()
+	#a.percentagehistogramm()
 	a.metricsplot(3)
 	a.metricsplot(2)
 	a.metricsplot(4)
