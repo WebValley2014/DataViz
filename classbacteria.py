@@ -7,6 +7,26 @@ def get_randColor():
 	r = lambda: random.randint(0, 255)
 	return '#%02X%02X%02X' % (r(), r(), r())
 
+def percentage_row(matrix, style='row'):
+	if style != 'row':
+		matrix = matrix.T
+	percentageData = matrix
+	row = percentageData.shape[0]
+	sumLine = 0
+	for i in matrix:
+		arr = i
+		#sum row j
+		print '---'
+		for j in arr:
+			sumLine = sumLine + int(j)
+		print sumLine
+		#convert line j in the percentage number, in var 'percentageData'
+		for m1, m2 in matrix, percentageData:
+			n = 0
+			for k1, k2 in m1, m2:
+				k2 = k1 / sumLine
+	return percentageData
+
 class BacteriaGraph(object):
 	"""
 	the srcTable need a format samples X bacteria.
@@ -45,12 +65,13 @@ class BacteriaGraph(object):
 			#raise Exception("wrong source file insert")		
 	def percentagehistogramm(self):
 		#CREATION OF THE PERCENTAGE HISTOGRAMM OF THE DATA WITH RANDOM COLORS
-		rangeNum = np.arange(1, self.samplesCount + 1, 1)
+		#clculate the percentage
+		
 		width = 0.8
 		bottom = [0] * self.samplesCount
 		colors = [0] * self.bacteriaCount
 		n = 0
-		for i in self.data2:
+		for i in percentageData:
 			if n != 0:
 				#sum the botton at the last bottom
 				cont = 0
@@ -116,16 +137,16 @@ class BacteriaGraph(object):
 			arrCases[0] = self.classes[0]
 		numCases = len(arrCases)
 		#calculate the average of the presence of bacteria
-
+		avBacteria = np.zeros((self.bacteriaCount, numCases))
+		for i in self.classes:
+			pass
 
 if __name__ == "__main__":
 
 
-	a=BacteriaGraph('fakedata/P1', 'fakedata/P2', 'fakedata/metrics.txt')
-	#a.percentagehistogramm()
+	a=BacteriaGraph('fakedata/percentagebacteria.txt', 'fakedata/P2', 'fakedata/metrics.txt')
 	a.metricsplot(3)
-	a.metricsplot(2)
-	a.metricsplot(4)
-	a.metricsplot(1)
-
-		
+	#a.metricsplot(2)
+	#a.metricsplot(4)
+	#a.metricsplot(1)
+	a.percentagehistogramm()
