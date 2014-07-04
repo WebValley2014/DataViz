@@ -8,25 +8,12 @@ def get_randColor():
 	return '#%02X%02X%02X' % (r(), r(), r())
 
 def percentage_row(matrix, style='row'):
+	mc = matrix.copy()
 	if style != 'row':
-		matrix = matrix.T
-	percentageData = matrix
-	row = percentageData.shape[0]
-	sumLine = 0
-	for i in matrix:
-		arr = i
-		#sum row j
-		print '---'
-		for j in arr:
-			sumLine = sumLine + int(j)
-		print sumLine
-		#convert line j in the percentage number, in var 'percentageData'
-		for m1, m2 in matrix, percentageData:
-			n = 0
-			for k1, k2 in m1, m2:
-				k2 = k1 / sumLine
-	return percentageData
-
+		mc = mc.T
+	#computing sum row by row
+	return mc / mc.sum(axis=1).reshape(2, 1)
+	
 class BacteriaGraph(object):
 	"""
 	the srcTable need a format samples X bacteria.
@@ -54,7 +41,7 @@ class BacteriaGraph(object):
 		self.srcStability = srcStability
 		self._loadData()
 	def _loadData(self):
-		#if (os.path.lexists(srcTable) = True and os.path.lexists(srcInfo) = True and os.path.lexists(srcMetrics) = True and os.path.lexists(srcFeatureList) = True and os.path.lexists(srcStability) = True):
+		#if (os.path.exists(srcTable) = True and os.path.lexists(srcInfo) = True and os.path.lexists(srcMetrics) = True and os.path.lexists(srcFeatureList) = True and os.path.lexists(srcStability) = True):
 			self.data1 = np.loadtxt(self.srcTable)
 			self.data2 = self.data1.T
 			self.samplesCount = self.data1.shape[0]
@@ -122,7 +109,7 @@ class BacteriaGraph(object):
 		plt.clf()
 	def classbacteriahistogramm():
 		#calculate the number of classes
-		arrCases = []
+		
 		try:
 			n = 0
 			for i in self.classes:
