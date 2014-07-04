@@ -9,6 +9,7 @@ def get_randColor():
 
 class BacteriaGraph(object):
 	"""
+	the srcTable need a format samples X bacteria.
 	this class can be used for receive, as a output,
 	some graphics which analyze the data:
 	*percentagehistogramm:
@@ -99,7 +100,22 @@ class BacteriaGraph(object):
 		plt.savefig('graphs/metricsplot' + str(style), format = 'png')
 		plt.clf()
 	def classbacteriahistogramm():
-		
+		#calculate the number of classes
+		arrCases = []
+		try:
+			n = 0
+			for i in self.classes:
+				test = True
+				for j in arrCases:
+					if j == i:
+						test = False
+						break
+				if test == True:
+					arrCases.append[i]
+		except:
+			arrCases[0] = self.classes[0]
+		numCases = len(arrCases)
+		#calculate the average of the presence of bacteria
 
 
 if __name__ == "__main__":
