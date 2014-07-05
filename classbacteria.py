@@ -131,8 +131,8 @@ class BacteriaGraph(object):
 		arrAUCerr = np.zeros(numData + 1)
 		arrACC = np.zeros(numData + 1)
 		arrACCerr = np.zeros(numData + 1)
-		arrDOR = np.zeros(numData + 1)
-		arrDORerr = np.zeros(numData + 1
+		#arrDOR = np.zeros(numData + 1)
+		#arrDORerr = np.zeros(numData + 1)
 		n = 0
 		for i in rowData:
 			arr = i
@@ -151,42 +151,49 @@ class BacteriaGraph(object):
 			arrAUCerr[n] = (arr[colAUCmax] - arr[colAUCmin])/2
 			arrACC[n] = arr[colACC]
 			arrACCerr[n] = (arr[colACCmax] - arr[colACCmin])/2
-			arrDOR[n] = arr[colDOR]
-			arrDORerr[n] = (arr[colDORmax] - arr[colDORmin])/2
+			#arrDOR[n] = arr[colDOR]
+			#arrDORerr[n] = (arr[colDORmax] - arr[colDORmin])/2
 			n += 1
 		plt.errorbar(arrRep, arrMCC, xerr=0, yerr=arrMCCerr)
 		plt.xlim((0.5, numData + 1))
 		plt.subplot().set_xscale("log")
 		plt.savefig('graphs/MCC_metricsplot' + str(style), format = 'png')
-		plt.errorbar(arrRep, arrSENS, xerr=0, yerr=arrSENSerr)
+		plt.clf()
+		plt.errorbar(arrRep, arrSENS, xerr=0, yerr=arrSENSerr, color = 'red')
 		plt.xlim((0.5, numData + 1))
 		plt.subplot().set_xscale("log")
 		plt.savefig('graphs/SENS_metricsplot' + str(style), format = 'png')
-		plt.errorbar(arrRep, arrSPEC, xerr=0, yerr=arrSPECerr)
+		plt.clf()
+		plt.errorbar(arrRep, arrSPEC, xerr=0, yerr=arrSPECerr, color = 'green')
 		plt.xlim((0.5, numData + 1))
 		plt.subplot().set_xscale("log")
 		plt.savefig('graphs/SPEC_metricsplot' + str(style), format = 'png')
-		plt.errorbar(arrRep, arrPPV, xerr=0, yerr=arrPPVerr)
+		plt.clf()
+		plt.errorbar(arrRep, arrPPV, xerr=0, yerr=arrPPVerr, color = 'black')
 		plt.xlim((0.5, numData + 1))
 		plt.subplot().set_xscale("log")
 		plt.savefig('graphs/PPV_metricsplot' + str(style), format = 'png')
-		plt.errorbar(arrRep, arrNPV, xerr=0, yerr=arrNPVerr)
+		plt.clf()
+		plt.errorbar(arrRep, arrNPV, xerr=0, yerr=arrNPVerr, color = 'purple')
 		plt.xlim((0.5, numData + 1))
 		plt.subplot().set_xscale("log")
 		plt.savefig('graphs/NPV_metricsplot' + str(style), format = 'png')
-		plt.errorbar(arrRep, arrAUC, xerr=0, yerr=arrAUCerr)
+		plt.clf()
+		plt.errorbar(arrRep, arrAUC, xerr=0, yerr=arrAUCerr, color = 'orange')
 		plt.xlim((0.5, numData + 1))
 		plt.subplot().set_xscale("log")
 		plt.savefig('graphs/AUC_metricsplot' + str(style), format = 'png')
-		plt.errorbar(arrRep, arrACC, xerr=0, yerr=arrACCerr)
+		plt.clf()
+		plt.errorbar(arrRep, arrACC, xerr=0, yerr=arrACCerr, color = 'brown')
 		plt.xlim((0.5, numData + 1))
 		plt.subplot().set_xscale("log")
 		plt.savefig('graphs/ACC_metricsplot' + str(style), format = 'png')
-		plt.errorbar(arrRep, arrDOR, xerr=0, yerr=arrDORerr)
-		plt.xlim((0.5, numData + 1))
-		plt.subplot().set_xscale("log")
-		plt.savefig('graphs/DOR_metricsplot' + str(style), format = 'png')
 		plt.clf()
+		#plt.errorbar(arrRep, arrDOR, xerr=0, yerr=arrDORerr)
+		#plt.xlim((0.5, numData + 1))
+		#plt.subplot().set_xscale("log")
+		#plt.savefig('graphs/DOR_metricsplot' + str(style), format = 'png')
+		#plt.clf()
 '''
 	def classbacteriahistogramm():
 		#calculate the number of classes
