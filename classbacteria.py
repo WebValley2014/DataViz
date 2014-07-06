@@ -214,6 +214,79 @@ class BacteriaGraph(object):
 		plt.subplot(241).set_xscale("log")
 		plt.savefig('graphs/_allMetricsplots' + str(style), format = 'png')
 		plt.clf()
+
+        def printSinglePlot(self, vCol, minCol, maxCol, xLim=10, color="red",
+                            outDir="graphs", outFile='graph.png'):
+            """
+            Read the data stored in self.metrics, using column 0 as
+            x axis values. Select the columns specified by *valueCol*,
+            *minCol*, *maxCol* as Y values and print a png chart.
+            
+            args:
+            *vCol*
+                (int)
+                number of the column with the Y values to plot
+            *minCol*
+                (int)
+                number of the column with the min Y values
+            *maxCol*
+                (int)
+                number of the column with the max Y values
+            
+            -----------------------
+            optional args:
+            *xLim*
+                (int)
+                x axis maximum value (scale). Defaults to 10.
+            *color*
+                (str)
+                The color of the func line (Y values). It defaults to "red".
+            *oudDir*
+                (str)
+                output dir. Defaults to `graphs'.
+            *outFile*
+                (str)
+                output filename. Defaults to `graph.png'.
+            """
+            # init 3 empty arrays for the sets: value, min, max
+            xArray = self.metrics[:xLim, 0]
+            vArray = self.metrics[:xLim, vCol]
+            minArray = self.metrics[:xLim, minCol]
+            maxArray = self.metrics[:xLim, maxCol]
+
+            # set file path
+            if not os.path.exists(outDir):
+                os.makedirs(outDir)
+            filePath = os.path.join(outDir, outFile)
+
+            # print the png image using matplotlib
+            plt.xlim((0.5, xLim + 1))
+            plt.xscale("log")
+            plt.plot(xArray, vArray, color=color)
+            plt.plot(xArray, minArray, color="black")
+            plt.plot(xArray, maxArray, color="black")
+            plt.savefig(filePath, format="png")
+
+        def printAllPlots(self):
+            """
+            Define a dict with the configuration of the plots I want to
+            print on a graph, and call many times self.printSinglePlot
+            to generate the png.
+            """
+            myConf = [{'vCol'       : 1,
+                       'minCol'     : 2,
+                       'maxCol'     : 3,
+                       'serie name' : "MCC",
+                       'color'      : "blue",
+                       },                      
+                      ]
+            for conf in myConf:
+                for xLim in [10, 100, 1000, self.metrics.shape[0]]:
+                    filename = "{0}_{1}.png".format(conf['serie name'], xLim)
+                    conf['filename'] = filename
+                    self.printSinglePlot(**conf)
+
+
 '''
 	def classbacteriahistogramm():
 		#calculate the number of classes
