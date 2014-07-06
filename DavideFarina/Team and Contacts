@@ -1,0 +1,102 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+<body>
+	<h1>The TEAM</h1>
+
+		<b>The WebValley team:</b><br><br><br>
+
+		<b>Tutors</b><br>
+		<p>Claudia Dolci</p>
+		<p>Giuseppe Jurman</p>
+		<p>Cesare Furlanello</p>
+		<p>Marco Chierici</p>
+		<p>Alessandro Zandona'</p>
+		<p>Marco Mina</p>
+		<p>Daniele Morabito</p>
+		<p>Shamar Droghetti</p>
+		<p>Gabriele Franch</p>
+		<p>Martina Calovi</p>
+		<p>Michele Filosi</p>
+		<p>Roberto Visintainer</p>
+		<p>Ernesto Arbitrio</p><br>	
+
+	
+		<b>Students</b><br>
+		<p>Andrea Rivera</p>
+		<p>Cristian Lizan</p>	
+		<p>Davide Bizzarri</p>
+		<p>Davide Farina</p>
+		<p>Davide Leonessi</p>	
+		<p>Deborah Miori</p>
+		<p>Federica Freddi</p>
+		<p>Filippo Quattrocchi</p>
+		<p>Hiromu Yakura</p>	
+		<p>Kaiwen Zheng</p>
+		<p>Kevin Lee</p>
+		<p>Luca Donini</p>
+		<p>Nebras Djemel</p>	
+		<p>Nina Bogdanovic</p>	
+		<p>Pia Sen</p>
+		<p>Ruchi Asthana</p>
+		<p>Stefano Valentini</p>
+		<p>Talissa Dreossi</p>
+		<p>Yuan Chen</p><br>
+
+
+	<h2>Special thanks to</h2>
+		
+		<p>Provincia Autonoma di Trento</p>
+		<p>APT Terme di Comano</p><br>
+		<p>Dolomiti di Brenta</p>
+		<p>Comune di San Lorenzo in Banale</p>
+		<p>EDULIfE</p>
+		<p>FAST: Federation of the Scientific and Technical Associations, Italy</p>
+		<p>FBK Board of Directors</p>
+		<p>Italian Embassy, Washington DC</p>
+		<p>MIUR National Program for Mathematics and Science Education (PLS)</p>
+		<p>NYEX: Network of Young Excellence</p>
+		<p>Trentino Network</p>
+		<p>US Society for Science</p><br>
+		<p>INTEL ISEF</p>
+		<p>Center for Integrative Biology, UniTN</p>
+		<p>Children’s Hospital and Research Institute, Bambino Gesu', Rome</p>
+		<p>Dip. di Pediatria e Neuropsichiatria Infantile, Sapienza</p><br>
+		<p>Universita' di Roma</p>
+		<p>Fondazione Edmund Mach</p><br>
+	
+
+
+	<h2>Contacts</h2>
+
+		<b>Fondazione Bruno Kessler</b><br>
+
+		<p>Via Sommarive, 18</p>
+		<p>Povo (Trento), Italy 38123</p>
+		<p>P: +39 366 7554977</p><br>
+
+		<p>webvalley@fbk.eu</p>
+		<p>http://webvalley.fbk.eu</p><br>
+
+		<p>Cesare Furlanello</p>
+		<p>Giuseppe Jurman - jurman at fbk dot eu</p>
+		<p>Martina Calovi - mcalovi at fbk dot eu</p><br><br>
+
+
+
+		<b>Bambino Gesu' Ospedale Pediatrico</b><br>
+
+		<p>Centralino</p>
+		<p>tel. +39 06.6859.1</p><br>
+
+		<p>URP - Ufficio Relazioni con il Pubblico</p>
+		<p>e-mail: urp@opbg.net </p><br>
+
+		<p>tel. +39 06.6859.4888 - Sedi di Roma Gianicolo, Taormina, Potenza e Catanzaro </p>
+		<p>tel. +39 06.6859.3638 - Sede di Roma San Paolo </p>
+		<p>tel. +39 06.6859.3555 - Sedi di Palidoro e Santa Marinella</p>
+
+</body>
+
+{% endblock %}
