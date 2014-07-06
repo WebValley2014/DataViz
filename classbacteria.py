@@ -154,6 +154,7 @@ class BacteriaGraph(object):
 			#arrDOR[n] = arr[colDOR]
 			#arrDORerr[n] = (arr[colDORmax] - arr[colDORmin])/2
 			n += 1
+		#plot the pictures
 		plt.errorbar(arrRep, arrMCC, xerr=0, yerr=arrMCCerr)
 		plt.xlim((0.5, numData + 1))
 		plt.subplot().set_xscale("log")
@@ -189,11 +190,30 @@ class BacteriaGraph(object):
 		plt.subplot().set_xscale("log")
 		plt.savefig('graphs/ACC_metricsplot' + str(style), format = 'png')
 		plt.clf()
-		#plt.errorbar(arrRep, arrDOR, xerr=0, yerr=arrDORerr)
-		#plt.xlim((0.5, numData + 1))
-		#plt.subplot().set_xscale("log")
-		#plt.savefig('graphs/DOR_metricsplot' + str(style), format = 'png')
-		#plt.clf()
+		#plot the big one graph (made by the other five graphs)
+		plt.errorbar(arrRep, arrMCC, xerr=0, yerr=arrMCCerr)
+		plt.xlim((0.5, numData + 1))
+		plt.subplot(241).set_xscale("log")
+		plt.errorbar(arrRep, arrSENS, xerr=0, yerr=arrSENSerr, color = 'red')
+		plt.xlim((0.5, numData + 1))
+		plt.subplot(242).set_xscale("log")
+		plt.errorbar(arrRep, arrSPEC, xerr=0, yerr=arrSPECerr, color = 'green')
+		plt.xlim((0.5, numData + 1))
+		plt.subplot(243).set_xscale("log")
+		plt.errorbar(arrRep, arrPPV, xerr=0, yerr=arrPPVerr, color = 'black')
+		plt.xlim((0.5, numData + 1))
+		plt.subplot(244).set_xscale("log")
+		plt.errorbar(arrRep, arrNPV, xerr=0, yerr=arrNPVerr, color = 'purple')
+		plt.xlim((0.5, numData + 1))
+		plt.subplot(245).set_xscale("log")
+		plt.errorbar(arrRep, arrAUC, xerr=0, yerr=arrAUCerr, color = 'orange')
+		plt.xlim((0.5, numData + 1))
+		plt.subplot(246).set_xscale("log")
+		plt.errorbar(arrRep, arrACC, xerr=0, yerr=arrACCerr, color = 'brown')
+		plt.xlim((0.5, numData + 1))
+		plt.subplot(247).set_xscale("log")
+		plt.savefig('graphs/allMetricsplots' + str(style), format = 'png')
+		plt.clf()
 '''
 	def classbacteriahistogramm():
 		#calculate the number of classes
