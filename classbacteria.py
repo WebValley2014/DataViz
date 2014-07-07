@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random
+import os
 
 def get_randColor():
 	#RETURN A EXADECIMAL RANDOM COLOR ie #ff45e2
@@ -215,8 +216,7 @@ class BacteriaGraph(object):
 		plt.savefig('graphs/_allMetricsplots' + str(style), format = 'png')
 		plt.clf()
 
-        def printSinglePlot(self, vCol, minCol, maxCol, xLim=10, color="red",
-                            outDir="graphs", outFile='graph.png'):
+        def printSinglePlot(self, **kwargs):
             """
             Read the data stored in self.metrics, using column 0 as
             x axis values. Select the columns specified by *valueCol*,
@@ -246,8 +246,16 @@ class BacteriaGraph(object):
                 output dir. Defaults to `graphs'.
             *outFile*
                 (str)
-                output filename. Defaults to `graph.png'.
+                output filename. Defaults to `testGraph.png'.
             """
+	    # manage args
+	    vCol = kwargs.get('vCol')
+	    minCol = kwargs.get('minCol')
+	    maxCol = kwargs.get('maxCol')
+	    xLim = kwargs.get('xLim', 10)
+	    color = kwargs.get('color', 'red')
+	    outDir = kwargs.get('outDir', 'graphs')
+	    outFile = kwargs.get('outFile', 'testGraph.png')
             # init 3 empty arrays for the sets: value, min, max
             xArray = self.metrics[:xLim, 0]
             vArray = self.metrics[:xLim, vCol]
@@ -266,6 +274,7 @@ class BacteriaGraph(object):
             plt.plot(xArray, minArray, color="black")
             plt.plot(xArray, maxArray, color="black")
             plt.savefig(filePath, format="png")
+	    plt.clf()
 
         def printAllPlots(self):
             """
@@ -276,14 +285,49 @@ class BacteriaGraph(object):
             myConf = [{'vCol'       : 1,
                        'minCol'     : 2,
                        'maxCol'     : 3,
-                       'serie name' : "MCC",
+                       'outFile'    : "MCC",
                        'color'      : "blue",
-                       },                      
-                      ]
+                       },
+		      {'vCol'       : 4,
+                       'minCol'     : 5,
+                       'maxCol'     : 6,
+                       'outFile'    : "SENS",
+                       'color'      : "red",
+                       },          
+		      {'vCol'       : 7,
+                       'minCol'     : 8,
+                       'maxCol'     : 9,
+                       'outFile'    : "SPEC",
+                       'color'      : "green",
+                       },
+		      {'vCol'       : 10,
+                       'minCol'     : 11,
+                       'maxCol'     : 12,
+                       'outFile'    : "PPV",
+                       'color'      : "black",
+                       },
+		      {'vCol'       : 13,
+                       'minCol'     : 14,
+                       'maxCol'     : 15,
+                       'outFile' : "NPV",
+                       'color'      : "purple",
+                       },
+		      {'vCol'       : 16,
+                       'minCol'     : 17,
+                       'maxCol'     : 18,
+                       'outFile'    : "AUC",
+                       'color'      : "orange",
+                       },
+		      {'vCol'       : 19,
+                       'minCol'     : 20,
+                       'maxCol'     : 21,
+                       'outFile'    : "ACC",
+                       'color'      : "brown",
+                       }]
             for conf in myConf:
                 for xLim in [10, 100, 1000, self.metrics.shape[0]]:
-                    filename = "{0}_{1}.png".format(conf['serie name'], xLim)
-                    conf['filename'] = filename
+                    filename = "{0}_{1}.png".format(conf['outFile'], xLim)
+                    conf['outFile'] = filename
                     self.printSinglePlot(**conf)
 
 
@@ -314,8 +358,8 @@ if __name__ == "__main__":
 
 
 	a=BacteriaGraph('fakedata/percentagebacteria.txt', 'fakedata/P2', 'fakedata/metrics.txt')
-	a.metricsplot(3)
-	a.metricsplot(2)
-	a.metricsplot(4)
-	a.metricsplot(1)
+	a.printAllPlots()
+	#a.metricsplot(2)
+	#a.metricsplot(4)
+	#a.metricsplot(1)
 	#a.percentagehistogramm()
