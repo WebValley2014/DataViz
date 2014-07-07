@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random
+import os
 
 def get_randColor():
 	#RETURN A EXADECIMAL RANDOM COLOR ie #ff45e2
@@ -154,6 +155,7 @@ class BacteriaGraph(object):
 			#arrDOR[n] = arr[colDOR]
 			#arrDORerr[n] = (arr[colDORmax] - arr[colDORmin])/2
 			n += 1
+		#plot the pictures
 		plt.errorbar(arrRep, arrMCC, xerr=0, yerr=arrMCCerr)
 		plt.xlim((0.5, numData + 1))
 		plt.subplot().set_xscale("log")
@@ -189,11 +191,146 @@ class BacteriaGraph(object):
 		plt.subplot().set_xscale("log")
 		plt.savefig('graphs/ACC_metricsplot' + str(style), format = 'png')
 		plt.clf()
-		#plt.errorbar(arrRep, arrDOR, xerr=0, yerr=arrDORerr)
-		#plt.xlim((0.5, numData + 1))
-		#plt.subplot().set_xscale("log")
-		#plt.savefig('graphs/DOR_metricsplot' + str(style), format = 'png')
-		#plt.clf()
+		#plot the big one graph (made by the other five graphs) in alphabetic order
+		plt.errorbar(arrRep, arrMCC, yerr=arrMCCerr, color = 'blue')
+		plt.xlim((0.5, numData + 1))
+		plt.subplot(243).set_xscale("log")
+		plt.errorbar(arrRep, arrSENS, yerr=arrSENSerr, color = 'red')
+		plt.xlim((0.5, numData + 1))
+		plt.subplot(246).set_xscale("log")
+		plt.errorbar(arrRep, arrSPEC, yerr=arrSPECerr, color = 'green')
+		plt.xlim((0.5, numData + 1))
+		plt.subplot(247).set_xscale("log")
+		plt.errorbar(arrRep, arrPPV, yerr=arrPPVerr, color = 'black')
+		plt.xlim((0.5, numData + 1))
+		plt.subplot(245).set_xscale("log")
+		plt.errorbar(arrRep, arrNPV, yerr=arrNPVerr, color = 'purple')
+		plt.xlim((0.5, numData + 1))
+		plt.subplot(244).set_xscale("log")
+		plt.errorbar(arrRep, arrAUC, yerr=arrAUCerr, color = 'orange')
+		plt.xlim((0.5, numData + 1))
+		plt.subplot(242).set_xscale("log")
+		plt.errorbar(arrRep, arrACC, yerr=arrACCerr, color = 'brown')
+		plt.xlim((0.5, numData + 1))
+		plt.subplot(241).set_xscale("log")
+		plt.savefig('graphs/_allMetricsplots' + str(style), format = 'png')
+		plt.clf()
+
+        def printSinglePlot(self, **kwargs):
+            """
+            Read the data stored in self.metrics, using column 0 as
+            x axis values. Select the columns specified by *valueCol*,
+            *minCol*, *maxCol* as Y values and print a png chart.
+            
+            args:
+            *vCol*
+                (int)
+                number of the column with the Y values to plot
+            *minCol*
+                (int)
+                number of the column with the min Y values
+            *maxCol*
+                (int)
+                number of the column with the max Y values
+            
+            -----------------------
+            optional args:
+            *xLim*
+                (int)
+                x axis maximum value (scale). Defaults to 10.
+            *color*
+                (str)
+                The color of the func line (Y values). It defaults to "red".
+            *oudDir*
+                (str)
+                output dir. Defaults to `graphs'.
+            *outFile*
+                (str)
+                output filename. Defaults to `testGraph.png'.
+            """
+	    # manage args
+	    vCol = kwargs.get('vCol')
+	    minCol = kwargs.get('minCol')
+	    maxCol = kwargs.get('maxCol')
+	    xLim = kwargs.get('xLim', 10)
+	    color = kwargs.get('color', 'red')
+	    outDir = kwargs.get('outDir', 'graphs')
+	    outFile = kwargs.get('outFile', 'testGraph.png')
+            # init 3 empty arrays for the sets: value, min, max
+            xArray = self.metrics[:xLim, 0]
+            vArray = self.metrics[:xLim, vCol]
+            minArray = self.metrics[:xLim, minCol]
+            maxArray = self.metrics[:xLim, maxCol]
+
+            # set file path
+            if not os.path.exists(outDir):
+                os.makedirs(outDir)
+            filePath = os.path.join(outDir, outFile)
+
+            # print the png image using matplotlib
+            plt.xlim((0.5, xLim + 1))
+            plt.xscale("log")
+            plt.plot(xArray, vArray, color=color)
+            plt.plot(xArray, minArray, color="black")
+            plt.plot(xArray, maxArray, color="black")
+            plt.savefig(filePath, format="png")
+	    plt.clf()
+
+        def printAllPlots(self):
+            """
+            Define a dict with the configuration of the plots I want to
+            print on a graph, and call many times self.printSinglePlot
+            to generate the png.
+            """
+            myConf = [{'vCol'       : 1,
+                       'minCol'     : 2,
+                       'maxCol'     : 3,
+                       'outFile'    : "MCC",
+                       'color'      : "blue",
+                       },
+		      {'vCol'       : 4,
+                       'minCol'     : 5,
+                       'maxCol'     : 6,
+                       'outFile'    : "SENS",
+                       'color'      : "red",
+                       },          
+		      {'vCol'       : 7,
+                       'minCol'     : 8,
+                       'maxCol'     : 9,
+                       'outFile'    : "SPEC",
+                       'color'      : "green",
+                       },
+		      {'vCol'       : 10,
+                       'minCol'     : 11,
+                       'maxCol'     : 12,
+                       'outFile'    : "PPV",
+                       'color'      : "black",
+                       },
+		      {'vCol'       : 13,
+                       'minCol'     : 14,
+                       'maxCol'     : 15,
+                       'outFile' : "NPV",
+                       'color'      : "purple",
+                       },
+		      {'vCol'       : 16,
+                       'minCol'     : 17,
+                       'maxCol'     : 18,
+                       'outFile'    : "AUC",
+                       'color'      : "orange",
+                       },
+		      {'vCol'       : 19,
+                       'minCol'     : 20,
+                       'maxCol'     : 21,
+                       'outFile'    : "ACC",
+                       'color'      : "brown",
+                       }]
+            for conf in myConf:
+                for xLim in [10, 100, 1000, self.metrics.shape[0]]:
+                    filename = "{0}_{1}.png".format(conf['outFile'], xLim)
+                    conf['outFile'] = filename
+                    self.printSinglePlot(**conf)
+
+
 '''
 	def classbacteriahistogramm():
 		#calculate the number of classes
@@ -221,8 +358,8 @@ if __name__ == "__main__":
 
 
 	a=BacteriaGraph('fakedata/percentagebacteria.txt', 'fakedata/P2', 'fakedata/metrics.txt')
-	a.metricsplot(3)
-	a.metricsplot(2)
-	a.metricsplot(4)
-	a.metricsplot(1)
+	a.printAllPlots()
+	#a.metricsplot(2)
+	#a.metricsplot(4)
+	#a.metricsplot(1)
 	#a.percentagehistogramm()
