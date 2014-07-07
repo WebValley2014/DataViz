@@ -145,7 +145,7 @@ if __name__ == "__main__":
         # print r, angle, x, y
         cstringa = "\n" + "{" 
         cstringa = cstringa + "\"id\": " + str(idc)
-        cstringa = cstringa + ", \"name\": " + str(name)
+        cstringa = cstringa + ", \"name\": \"" + str(name) + "\""
         cstringa = cstringa + ", \"x\": " + str(x)
         cstringa = cstringa + ", \"y\": " + str(y)
         cstringa = cstringa + ", \"rank\": " + str(rank)
