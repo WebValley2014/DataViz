@@ -114,10 +114,12 @@ var rankRatio = 200;
 var maxZ = 0;
 var isShowingLabels = true;
 var labelsDate = Date.now();
+var windowsDate = Date.now();
 var triangle; 
 var maxLogInData = 0;
 var leftMouseIsDown = false;
 var rightMouseIsDown = false;
+var onlyOneWindow = false;
 
 var camerahelper;
 
@@ -136,18 +138,22 @@ function init()
 	// camera attributes
 	var VIEW_ANGLE = 60, ASPECT = XSize/YSize, NEAR = 0.1, FAR = 20000;
 	// set up topCamera
-	topCamera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
+	//topCamera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
+	var Y = XSize / YSize;
+	topCamera = new THREE.OrthographicCamera( -1.2, 1.2, -Y, Y, 10, -10);
 	scene.add(topCamera);
-	topCamera.position.set(0, 0, -5.2);
-	topCamera.rotation.set(0, Math.PI, 0);
+	//topCamera.position.set(0, 0, -5.2);
+	topCamera.position.set(0, 0, 0);
+	//topCamera.rotation.set(0, Math.PI, 0);
+	topCamera.rotation.set(0, 0, 0);
 
 
 	// set up sideCamera
 	sideCamera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
 	scene.add(sideCamera);
-	sideCamera.position.set(0, 0, -1.44);
+	sideCamera.position.set(0, 0, -0.44);
 	sideCamera.lookAt(new THREE.Vector3(0, -4, 0));	
-	sideCamera.rotation.set(Math.PI / 2,0, 0);
+	sideCamera.rotation.set(Math.PI / 2 - 0 * (Math.PI / 180), 0, 0);
 
     renderer = new THREE.WebGLRenderer({antialias: true});
 	renderer.setSize(XSize, YSize);
@@ -186,7 +192,7 @@ function init()
 	// DRAWING //
 	/////////////
 
-	call("http://localhost/DavideFarina/prova_json_2.txt");
+	call("http://localhost/DavideFarina/prova_json_5.txt");
 	ParsePointsJSON();
 	CreateGraph();
 	call("http://localhost/DavideFarina/boxPlotsData.txt");
@@ -212,10 +218,6 @@ function ParseBoxPlotsJSON() {
 
 function CreateGraph() {
 	var maxCoord = 0; //the biggest |coord|
-	var sphereGeom = new THREE.SphereGeometry(0.02, 16, 16);
-	/*var tmpMat = new THREE.MeshLambertMaterial({color: 0x0000ff});
-	var center = new THREE.Mesh(sphereGeom, tmpMat);
-	scene.add(center);*/
 
 	for(i in objects)
 		scene.remove(objects[i])
@@ -238,8 +240,9 @@ function CreateGraph() {
 		if(Math.log10(parsedPointsJson[i].rank) > maxLogInData)
 			maxLogInData = Math.log10(parsedPointsJson[i].rank);
 
+		var sphereGeom = new THREE.SphereGeometry(0.08 / (0.5 *  parsedPointsJson[i].depth + 2), 16, 16);
 		var sphereMat;
-		if(parsedPointsJson[i].id == 1)
+		if(parsedPointsJson[i].id == 0)
 			sphereMat = new THREE.MeshLambertMaterial({color: 0x000000, wireframe:false, ambient:0x000000});
 		else
 			sphereMat = new THREE.MeshLambertMaterial({color: 0x00ff00, wireframe:false, ambient:0x444444});
@@ -252,6 +255,10 @@ function CreateGraph() {
 		objects.push(sphere);
 		objects[i].id = parsedPointsJson[i].id;
 		objects[i].childs = parsedPointsJson[i].childs;
+		if(parsedPointsJson[i].id == 0) {
+			sphere.scale.set(2, 2, 2);
+			sphere.position.set(0, 0, -0.44);
+		}
 		scene.add(sphere);
 	}
 	//at this point "objects" has every sphere with every id. We can now do the edges.
@@ -264,9 +271,9 @@ function CreateGraph() {
 			for(k in objects)
 				if(objects[k].id == objects[i].childs[j]) {
 					if(objects[k].childs.length == 0)
-						drawEdge(objects[i], objects[k], true);
+						drawEdge(objects[i], objects[k], true, k);
 					else
-						drawEdge(objects[i], objects[k], false);
+						drawEdge(objects[i], objects[k], false, k);
 					break; }
 	
 	if(maxLogInData < 2)
@@ -309,7 +316,7 @@ function CreateLabels() {
 	for(i in parsedPointsJson) {
 		var spritey = makeTextSprite( parsedPointsJson[i].name, 
 		{ fontsize: 24, borderColor: {r:255, g:0, b:0, a:1.0}, backgroundColor: {r:255, g:100, b:100, a:0.8} } );
-		spritey.position.set(parsedPointsJson[i].x + 0.12, parsedPointsJson[i].y - 0.03, Math.log10(parsedPointsJson[i].rank + 1) * -1);
+		spritey.position.set(parsedPointsJson[i].x + 0.15, parsedPointsJson[i].y - 0.03, Math.log10(parsedPointsJson[i].rank + 1) * -1);
 		//spritey.position.set(1, 0, -1.35);
 		labels.push(spritey);
 		scene.add( spritey );
@@ -335,7 +342,6 @@ function CreateTriangle() {
     var v2 = new THREE.Vector3(1.15,0,0);
     var v3 = new THREE.Vector3(1,0.6,0);
     
-    console.log(geom.vertices)
     geom.vertices.push(v1);
     geom.vertices.push(v2);
     geom.vertices.push(v3);
@@ -343,7 +349,7 @@ function CreateTriangle() {
     geom.faces.push( new THREE.Face3( 0, 1, 2 ) );
     geom.computeFaceNormals();
     
-    triangle= new THREE.Mesh( geom, new THREE.MeshNormalMaterial({color: 0xff0000, transparent: true, opacity: 0.7, wireframe:false}) );	
+    triangle= new THREE.Mesh( geom, new THREE.MeshLambertMaterial({color: 0x0000cc, transparent: true, opacity: 0.7, wireframe:false}) );	
 	triangle.rotation.set(0, Math.PI, 0);
 	triangle.position.set(0, 0, -maxLogInData - 0.1 );
     scene.add(triangle);
@@ -364,30 +370,41 @@ function onWindowResize() {
 function animate() 
 {
 	if (keyboard.pressed("A")) { //rotation while in the middle
-		sideCamera.rotation.set(sideCamera.rotation.x, sideCamera.rotation.y + 0.01, sideCamera.rotation.z); 
+		sideCamera.rotation.set(Math.PI / 2 - 0 * (Math.PI / 180), sideCamera.rotation.y + 0.01, sideCamera.rotation.z); 
 	}
 	if (keyboard.pressed("D")) { //rotation while in the middle
-        sideCamera.rotation.set(sideCamera.rotation.x, sideCamera.rotation.y - 0.01, sideCamera.rotation.z);
+        sideCamera.rotation.set(Math.PI / 2 - 0 * (Math.PI / 180), sideCamera.rotation.y - 0.01, sideCamera.rotation.z);
 	}
-	if (keyboard.pressed("W")) { //rotation while in the middle
+	if (keyboard.pressed("W")) { //up
 		if(sideCamera.position.z < (-1.44 + 1))
 			sideCamera.position.set(sideCamera.position.x, sideCamera.position.y, sideCamera.position.z + 0.005); 
 	}
-	if (keyboard.pressed("S")) { //rotation while in the middle
+	if (keyboard.pressed("S")) { //down
 		if(sideCamera.position.z > (-1.44 - 1))
         	sideCamera.position.set(sideCamera.position.x, sideCamera.position.y, sideCamera.position.z - 0.005);
 	}
-	if (keyboard.pressed("Q")) { //rotation while in the middle
+	if (keyboard.pressed("Q")) { //zoom
 		sideCamera.translateZ( 0.005 ); 
 	}
-	if (keyboard.pressed("E")) { //rotation while in the middle
+	if (keyboard.pressed("E")) { //zoom
         sideCamera.translateZ( -0.005 );
+	}
+	if (keyboard.pressed("Z")) { //orbit
+        sideCamera.rotation.set(Math.PI / 2 - 0 * (Math.PI / 180), sideCamera.rotation.y - 0.01, sideCamera.rotation.z );
+		sideCamera.position.set(Math.sin(sideCamera.rotation.y) * 2, -Math.cos(sideCamera.rotation.y) * 2, sideCamera.position.z);
+	}
+	if (keyboard.pressed("X")) { //orbit
+        sideCamera.rotation.set(Math.PI / 2 - 0 * (Math.PI / 180), sideCamera.rotation.y + 0.01, sideCamera.rotation.z );
+		sideCamera.position.set(Math.sin(sideCamera.rotation.y) * 2, -Math.cos(sideCamera.rotation.y) * 2, sideCamera.position.z);
 	}
 	if (keyboard.pressed("L")) { //labels on off
         ShowLabels();
 	}
-	if (keyboard.pressed("C")) { //camera back to 0 0 0
+	if (keyboard.pressed("C")) { //camera back to 0 0 z
         sideCamera.position.set(0, 0, -1.44);
+	}
+	if (keyboard.pressed("R")) { //1 or 2 windows
+		SwitchWindows();        
 	}
 	
 	//Update triangle
@@ -404,40 +421,62 @@ function animate()
 		topCamera.position.set(topCamera.position.x, topCamera.position.y, topCamera.position.z - 0.05);
 }
 
+function SwitchWindows() {
+	if(Date.now() - windowsDate > 500) {
+		windowsDate = Date.now();
+	onlyOneWindow = !onlyOneWindow;
+	}
+}
 
 
 function render() 
 {	
 	//renderer.render( scene, sideCamera );
-
-	var SCREEN_WIDTH = renderer.domElement.width, SCREEN_HEIGHT = renderer.domElement.height;
-	sideCamera.aspect = 0.5 * SCREEN_WIDTH / SCREEN_HEIGHT;
-	topCamera.aspect = 0.5 * SCREEN_WIDTH / SCREEN_HEIGHT;
-	sideCamera.updateProjectionMatrix();
-	topCamera.updateProjectionMatrix();
+	if(!onlyOneWindow) {
+		var SCREEN_WIDTH = renderer.domElement.width, SCREEN_HEIGHT = renderer.domElement.height;
+		sideCamera.aspect = 0.5 * SCREEN_WIDTH / SCREEN_HEIGHT;
+		topCamera.aspect = 0.5 * SCREEN_WIDTH / SCREEN_HEIGHT;
+		sideCamera.updateProjectionMatrix();
+		topCamera.updateProjectionMatrix();
 	
-	// setViewport parameters:
-	//  lower_left_x, lower_left_y, viewport_width, viewport_height
+		// setViewport parameters:
+		//  lower_left_x, lower_left_y, viewport_width, viewport_height
 
-	renderer.setViewport( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT );
-	renderer.clear();
+		renderer.setViewport( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT );
+		renderer.clear();
 
-	// left side
-	renderer.setViewport( 1, 1,   0.5 * SCREEN_WIDTH - 2, SCREEN_HEIGHT - 2 );
-	renderer.render( scene, sideCamera );
+		// left side
+		renderer.setViewport( 1, 1,   0.5 * SCREEN_WIDTH - 2, SCREEN_HEIGHT - 2 );
+		renderer.render( scene, sideCamera );
 
-	// right side
-	renderer.setViewport( 0.5 * SCREEN_WIDTH, 1,   0.5 * SCREEN_WIDTH - 2, SCREEN_HEIGHT - 2 );
-	renderer.render( scene, topCamera );
+		// right side
+		renderer.setViewport( 0.5 * SCREEN_WIDTH, 1,   0.5 * SCREEN_WIDTH - 2, SCREEN_HEIGHT - 2 );
+		renderer.render( scene, topCamera );
+	}
+	else {
+		var SCREEN_WIDTH = renderer.domElement.width, SCREEN_HEIGHT = renderer.domElement.height;
+		sideCamera.aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
+		sideCamera.updateProjectionMatrix();
+	
+		// setViewport parameters:
+		//  lower_left_x, lower_left_y, viewport_width, viewport_height
+
+		renderer.setViewport( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT );
+		renderer.clear();
+
+		// left side
+		renderer.setViewport( 1, 1, SCREEN_WIDTH - 2, SCREEN_HEIGHT - 2 );
+		renderer.render( scene, sideCamera );
+	}
 }
 
-function drawEdge(source, target, semitransparent) { //draws an edge from "source" to "target"
+function drawEdge(source, target, semitransparent, id) { //draws an edge from "source" to "target"
 	var lineGeom = new THREE.Geometry();
 	var lineMat;
 	if(!semitransparent)
-		lineMat = new THREE.LineBasicMaterial({ color: 0x000066, opacity: 1, linewidth: 1, transparent: true });
+		lineMat = new THREE.LineBasicMaterial({ color: 0x000066, opacity: 1, linewidth: 0.5 + 80 / Math.pow((parsedPointsJson[id].depth + 1), 3), transparent: true });
 	else
-		lineMat = new THREE.LineBasicMaterial({ color: 0x000066, opacity: 0.5, linewidth: 1, transparent: true });
+		lineMat = new THREE.LineBasicMaterial({ color: 0x000066, opacity: 0.5, linewidth: 0.5 + 80 / Math.pow((parsedPointsJson[id].depth + 1), 3), transparent: true });
 	lineMat.depthWrite = false;
 	lineGeom.vertices.push(source.position);
 	lineGeom.vertices.push(target.position);
