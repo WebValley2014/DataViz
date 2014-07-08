@@ -113,7 +113,7 @@ var projector = new THREE.Projector();
 
 //My Variables
 var samples = []; //contains the lines of the file
-var headers = ["PC1", "PC2", "PC3", "Sample type", "Bact5", "VeryLongBacteriaName"]; //headers of the lines to be shown on the popup
+var headers = ["Name", "PC1", "PC2", "PC3"]; //headers of the lines to be shown on the popup
 var popup = []; //contains the differnet parts of the popup
 var edges = []; //contains eventual edges of the graph
 var labels = []; //contains the 3 labels of the axis as objects
@@ -177,9 +177,9 @@ function init()
 	// DRAWING //
 	/////////////
 
-	call("http://localhost/testData.txt");
+	call("http://localhost/DavideFarina/principal_coordinates.txt");
 	ReadToMatrix();
-	call("http://localhost/testStatus.txt");
+	call("http://localhost/DavideFarina/testStatus.txt");
 	ReadToStatus();
 	MatrixToSamples();
 	CreateAxis();
@@ -191,11 +191,12 @@ function ReadToMatrix() {
 	dataMatrix = [];
 	splitted = r.split(' ');
 	var j = 0;
-	for(var i = 0; i < (splitted.length - 1) / 3; i++) {
+	for(var i = 0; i < (splitted.length - 1) / 4; i++) {
 		dataMatrix.push([]);
-		dataMatrix[i][0] = splitted[j++] / 3;
-		dataMatrix[i][1] = splitted[j++] / 3;
-		dataMatrix[i][2] = splitted[j++] / 3;
+		dataMatrix[i][0] = splitted[j++];
+		dataMatrix[i][1] = splitted[j++];
+		dataMatrix[i][2] = splitted[j++];
+		dataMatrix[i][3] = splitted[j++];
 	}	
 }
 
@@ -251,9 +252,10 @@ function MatrixToSamples() { //puts the data into the samples array
 		else {
 			samples[i].Status = "Disease";
 			samples[i].IsCtrl = false; }
-		samples[i].PC1 = dataMatrix[i][0];
-		samples[i].PC2 = dataMatrix[i][1];
-		samples[i].PC3 = dataMatrix[i][2];
+		samples[i].Name = dataMatrix[i][0];
+		samples[i].PC1 = dataMatrix[i][1];
+		samples[i].PC2 = dataMatrix[i][2];
+		samples[i].PC3 = dataMatrix[i][3];
 	}
 }
 
@@ -371,24 +373,40 @@ function CreateGraph() {
 		scene.remove(objects[i]);
 	objects = [];
 
+	var minX = 0;
+	var minY = 0;
+	var minZ = 0;
+	
+	for(var j = 0; j < samples.length; j++) {
+		if(parseFloat(samples[j].PC1) < minX)
+			minX = parseFloat(samples[j].PC1);
+		if(parseFloat(samples[j].PC2) < minY)
+			minY = parseFloat(samples[j].PC2);
+		if(parseFloat(samples[j].PC3) < minZ)
+			minZ = parseFloat(samples[j].PC3);
+	}	
+	alert(minX);
+
 	var sphereMat;
 	for(var i = 0; i < samples.length; i++) { //samples to objects
+/*
 		if(samples[i].IsCtrl) 
 			sphereMat = new THREE.MeshLambertMaterial({color: 0x00ff00, transparent: true}); 	
 		else
+*/
 			sphereMat = new THREE.MeshLambertMaterial({color: 0xff0000, transparent: true});
 		sphereMat.depthWrite = false;
-		var sphereGeom = new THREE.SphereGeometry(0.8, 200, 200);
+		var sphereGeom = new THREE.SphereGeometry(0.8, 20, 20);
 		objects[i] = new THREE.Mesh(sphereGeom, sphereMat);
 		
-		objects[i].position.x = -20 + samples[i].PC1 * 20;
-		objects[i].position.y = -10 + samples[i].PC2 * 20;
-		objects[i].position.z = -10 + samples[i].PC3 * 20;
+		objects[i].position.x = -20 + samples[i].PC1 * 20 - minX * 20;
+		objects[i].position.y = -10 + samples[i].PC2 * 20 - minY * 20;
+		objects[i].position.z = -10 + samples[i].PC3 * 20 - minZ * 20;
 		objects[i].DataValues = []; // Contains all the data taken from the samples. It's a copy
+		objects[i].DataValues.push(samples[i].Name);
 		objects[i].DataValues.push(samples[i].PC1);
 		objects[i].DataValues.push(samples[i].PC2);
 		objects[i].DataValues.push(samples[i].PC3);
-		objects[i].DataValues.push(samples[i].Status);
 		//objects.push(objects[i]);
 
 		objects[i].scale.x = sphereRadius;

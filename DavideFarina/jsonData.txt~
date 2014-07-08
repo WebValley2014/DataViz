@@ -1,18 +1,18 @@
 {
 "data":[
-{"id": "0", "name": "BactName", "x": 0, "y": 0, "rank": 3, "childs": [2, 3, 7] },
-{"id": "1", "name": "BactName", "x": -2, "y": 1, "rank": 2, "childs": [] },
-{"id": "2", "name": "BactName", "x": -1, "y": 1, "rank": 2, "childs": [1] },
-{"id": "3", "name": "BactName", "x": 0, "y": -1, "rank": 2, "childs": [4] },
-{"id": "4", "name": "BactName", "x": 0, "y": -2, "rank": 1, "childs": [5, 6] },
-{"id": "5", "name": "BactName", "x": -1, "y": -3, "rank": 0, "childs": [] },
-{"id": "6", "name": "BactName", "x": 1, "y": -3, "rank": 0, "childs": [] },
-{"id": "7", "name": "BactName", "x": 1, "y": 0, "rank": 2, "childs": [8, 9, 10, 11, 12] },
-{"id": "8", "name": "BactName", "x": 2, "y": 1, "rank": 2, "childs": [] },
-{"id": "9", "name": "BactName", "x": 2, "y": 0.5, "rank": 3, "childs": [] },
-{"id": "10", "name": "BactName", "x": 2, "y": 0, "rank": 1, "childs": [] },
-{"id": "11", "name": "BactName", "x": 2, "y": -0.5, "rank": 1, "childs": [] },
-{"id": "12", "name": "BactName", "x": 2, "y": -1, "rank": 2, "childs": [13] },
-{"id": "13", "name": "BactName", "x": 3, "y": -1, "rank": 2, "childs": [14] },
-{"id": "14", "name": "BactName", "x": 4, "y": -1, "rank": 2, "childs": [] }
+{"id": "0", "name": "BactName", "x": 0, "y": 0, "rank": 3, "childs": [2, 3, 7], "color": 0xffffff },
+{"id": "1", "name": "BactName", "x": -2, "y": 1, "rank": 2, "childs": [], "color": "0xff0000" },
+{"id": "2", "name": "BactName", "x": -1, "y": 1, "rank": 2, "childs": [1], "color": "0xff0000" },
+{"id": "3", "name": "BactName", "x": 0, "y": -1, "rank": 2, "childs": [4], "color": "0xff0000" },
+{"id": "4", "name": "BactName", "x": 0, "y": -2, "rank": 1, "childs": [5, 6], "color": "0xff0000" },
+{"id": "5", "name": "BactName", "x": -1, "y": -3, "rank": 0, "childs": [], "color": "0xff0000" },
+{"id": "6", "name": "BactName", "x": 1, "y": -3, "rank": 0, "childs": [], "color": "0xff0000" },
+{"id": "7", "name": "BactName", "x": 1, "y": 0, "rank": 2, "childs": [8, 9, 10, 11, 12], "color": "0xff0000" },
+{"id": "8", "name": "BactName", "x": 2, "y": 1, "rank": 2, "childs": [], "color": "0xff0000" },
+{"id": "9", "name": "BactName", "x": 2, "y": 0.5, "rank": 3, "childs": [], "color": "0xff0000" },
+{"id": "10", "name": "BactName", "x": 2, "y": 0, "rank": 1, "childs": [], "color": "0xff0000" },
+{"id": "11", "name": "BactName", "x": 2, "y": -0.5, "rank": 1, "childs": [], "color": "0xff0000" },
+{"id": "12", "name": "BactName", "x": 2, "y": -1, "rank": 2, "childs": [13], "color": "0xff0000" },
+{"id": "13", "name": "BactName", "x": 3, "y": -1, "rank": 2, "childs": [14], "color": "0xff0000" },
+{"id": "14", "name": "BactName", "x": 4, "y": -1, "rank": 2, "childs": [], "color": "0xff0000" }
 ]}
