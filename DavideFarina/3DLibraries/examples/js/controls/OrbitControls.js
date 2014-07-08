@@ -59,7 +59,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 	// How far you can orbit vertically, upper and lower limits.
 	// Range is 0 to Math.PI radians.
-	this.minPolarAngle = - Math.PI; // radians
+	this.minPolarAngle = 0; // radians
 	this.maxPolarAngle = Math.PI; // radians
 
 	// Set to true to disable use of the keys
@@ -216,11 +216,11 @@ THREE.OrbitControls = function ( object, domElement ) {
 		// angle from z-axis around y-axis
 
 		var theta = Math.atan2( offset.x, offset.z );
-		//var theta = 0;
 
 		// angle from y-axis
 
 		var phi = Math.atan2( Math.sqrt( offset.x * offset.x + offset.z * offset.z ), offset.y );
+
 		if ( this.autoRotate ) {
 
 			this.rotateLeft( getAutoRotationAngle() );

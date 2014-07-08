@@ -15,9 +15,9 @@
     <![endif]-->
   </head>
   <body>
-	<script src="TreeGraph_files/three.js"></script>
- <script src="TreeGraph_files/OrbitControls.js"></script>
-		<script src="TreeGraph_files/THREEx.js"></script>
+	<script src="3DLibraries/build/three.js"></script>
+ <script src="3DLibraries/examples/js/controls/OrbitControls.js"></script>
+		<script src="3DLibraries/build/THREEx.KeyboardState.js"></script>
 
 	<div id="wrapper">
 		<nav id="topnavbar" class="navbar navbar-default" role="navigation">
@@ -62,9 +62,7 @@
 		</nav>
 		<div class="navseparator"></div>
 		<main>
-			<div align="center"><p>Controls: "O" and "P" to resize the points. 
-Right mouse button to move the graph. Left mouse button to rotate the 
-graph. Press mouse wheel to zoom.</p></div>
+			<div align="center"><p>Controls: Still WIP.</p></div>
 			<div id="threeJsCanvas" style="position: static;" align="center"></canvas></div>
 <!-- ----------------------------------------------------------------------------------------------------------------------------------- -->
         <script type="text/javascript">
@@ -97,7 +95,8 @@ var call = function(url) {
 }
 
 // standard global variables
-var container, scene, camera, renderer, controls;
+var container, scene, renderer, controls;
+var topcamera, sideCamera;
 
 document.addEventListener( 'mousedown', onDocumentMouseDown, false );
 var projector = new THREE.Projector();
@@ -106,11 +105,16 @@ var projector = new THREE.Projector();
 var objects = []; //contains the 3D points of the graph
 var XSize = 940;
 var YSize = 600;
+var labels = [];
 var edges = [];
 var parsedPointsJson = [];
 var parsedBoxPlotsJson = [];
 var rankRatio = 200;
 var maxZ = 0;
+var isShowingLabels = true;
+var labelsDate = Date.now();
+var triangle; 
+var maxLogInData = 0;
 
 var camerahelper;
 
@@ -127,28 +131,36 @@ function init()
 	keyboard = new THREEx.KeyboardState();
 	
 	// camera attributes
-	var VIEW_ANGLE = 45, ASPECT = XSize/YSize, NEAR = 0.1, FAR = 20000;
-	// set up camera
-	camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
-	
-	// add the camera to the scene
-	scene.add(camera);
-	camera.position.set(0,-4,1);
-	camera.lookAt(new THREE.Vector3(0, 0, 0));	
-	camera.rotation.set(Math.PI / 2, 0, 0);
+	var VIEW_ANGLE = 60, ASPECT = XSize/YSize, NEAR = 0.1, FAR = 20000;
+	// set up topCamera
+	topCamera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
+	scene.add(topCamera);
+	topCamera.position.set(0, 0, -3);
+	topCamera.rotation.set(0, Math.PI, 0);
+
+
+	// set up sideCamera
+	sideCamera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
+	scene.add(sideCamera);
+	sideCamera.position.set(0, 0, -1.44);
+	sideCamera.lookAt(new THREE.Vector3(0, -4, 0));	
+	sideCamera.rotation.set(Math.PI / 2,0, 0);
 
     renderer = new THREE.WebGLRenderer({antialias: true});
-		        renderer.setSize(window.innerWidth, window.innerHeight);
 	renderer.setSize(XSize, YSize);
+	renderer.setClearColorHex( 0x000000, 1 );
+	renderer.autoClear = false;
 
 	container = document.getElementById("threeJsCanvas");
     //document.body.appendChild( container );
 	
 	container.appendChild( renderer.domElement );
 	
-	controls = new THREE.OrbitControls( camera, renderer.domElement );
-	controls.target = new THREE.Vector3(0, 0, 0);
-	
+	controls = new THREE.OrbitControls( sideCamera, renderer.domElement );
+	controls.target = new THREE.Vector3(0, -4, 0);
+	controls.noRotate = true;
+	controls.noPan = true;
+	controls.noZoom = true;
 	///////////
 	// LIGHT //
 	///////////
@@ -169,6 +181,8 @@ function init()
 	call("http://localhost/DavideFarina/boxPlotsData.txt");
 	ParseBoxPlotsJSON();
 	CreateBoxPlots();
+	CreateLabels();
+	CreateTriangle();
 }
 
 function ParsePointsJSON() {
@@ -187,7 +201,6 @@ function ParseBoxPlotsJSON() {
 
 function CreateGraph() {
 	var maxCoord = 0; //the biggest |coord|
-
 	var sphereGeom = new THREE.SphereGeometry(0.02, 16, 16);
 	/*var tmpMat = new THREE.MeshLambertMaterial({color: 0x0000ff});
 	var center = new THREE.Mesh(sphereGeom, tmpMat);
@@ -197,7 +210,7 @@ function CreateGraph() {
 		scene.remove(objects[i])
 
 	for(i in parsedPointsJson) {
-		
+		/*
 		if(parsedPointsJson[i].x > maxCoord)
 			maxCoord = parsedPointsJson[i].x;
 		else if(parsedPointsJson[i].x * -1 > maxCoord)
@@ -209,13 +222,16 @@ function CreateGraph() {
 		else if(Math.log10(parsedPointsJson[i].rank + 1)> maxCoord)
 			maxCoord = Math.log10(parsedPointsJson[i].rank + 1);
 		else if(Math.log10(parsedPointsJson[i].rank + 1) * -1> maxCoord)
-			maxCoord = Math.log10(parsedPointsJson[i].rank + 1) * -1;
+			maxCoord = Math.log10(parsedPointsJson[i].rank + 1) * -1;*/
+
+		if(Math.log10(parsedPointsJson[i].rank) > maxLogInData)
+			maxLogInData = Math.log10(parsedPointsJson[i].rank);
 
 		var sphereMat;
 		if(parsedPointsJson[i].id == 1)
 			sphereMat = new THREE.MeshLambertMaterial({color: 0x000000, wireframe:false, ambient:0x000000});
 		else
-			sphereMat = new THREE.MeshLambertMaterial({color: 0x0000ff, wireframe:false, ambient:0x444444});
+			sphereMat = new THREE.MeshLambertMaterial({color: 0x00ff00, wireframe:false, ambient:0x444444});
 		var sphere = new THREE.Mesh(sphereGeom, sphereMat);
 		if(parsedPointsJson[i].rank != 0)
 			sphere.position.set(parsedPointsJson[i].x, parsedPointsJson[i].y, Math.log10(parsedPointsJson[i].rank + 1) * -1);
@@ -236,43 +252,27 @@ function CreateGraph() {
 		for (j in objects[i].childs)
 			for(k in objects)
 				if(objects[k].id == objects[i].childs[j]) {
-					drawEdge(objects[i], objects[k], true);
+					if(objects[k].childs.length == 0)
+						drawEdge(objects[i], objects[k], true);
+					else
+						drawEdge(objects[i], objects[k], false);
 					break; }
-
-	var containerGeom = new THREE.CubeGeometry(maxCoord * 2 + 0.5, maxCoord * 2+ 0.5, maxCoord * 2 + 0.5, 5, 5, 5);
+	
+	if(maxLogInData < 2)
+		maxLogInData = 2;
+	var containerGeom = new THREE.CubeGeometry(maxLogInData + 0.2, maxLogInData + 0.2, maxLogInData + 0.2, 1, 1, 1);
 	containerGeom.applyMatrix(new THREE.Matrix4().makeScale( -1, 1, 1 ) ); //flips the normals
 
 	var texture = THREE.ImageUtils.loadTexture( "gridBigger.png" );
 	var containerMat = new THREE.MeshLambertMaterial({map:texture});
 	var container = new THREE.Mesh(containerGeom, containerMat);
 
-	container.position.set(0, 0, 0);
+	container.position.set(0, 0, -maxLogInData / 2 - 0.2);
 	scene.add(container);
 
 }
 
 function CreateBoxPlots() {
-/*
-	var group = new THREE.Object3D();
-		//still needs the rotation
-	for(i in parsedBoxPlotsJson) {
-		var boxGeom = new THREE.CubeGeometry(0.01, 0.01, eval(parsedBoxPlotsJson[i].end1 - parsedBoxPlotsJson[i].start1)/10, 1, 1, 1);
-		var boxMat = new THREE.MeshLambertMaterial({color: 0xdddddd});
-		var box = new THREE.Mesh(boxGeom, boxMat);	
-		box.position.set(objects[i].position.x, objects[i].position.y, 0.01 + objects[i].position.z + parsedBoxPlotsJson[i].start1 / 10);		
-		group.add(box);
-	}
-
-	for(i in parsedBoxPlotsJson) {
-		var boxGeom = new THREE.CubeGeometry(0.01, 0.01, eval(parsedBoxPlotsJson[i].end2 - parsedBoxPlotsJson[i].start2)/10, 1, 1, 1);
-		var boxMat = new THREE.MeshLambertMaterial({color: 0xdddddd});
-		var box = new THREE.Mesh(boxGeom, boxMat);
-		box.position.set(objects[i].position.x + 0.02, objects[i].position.y, 0.01 + objects[i].position.z + parsedBoxPlotsJson[i].start2 / 10 - (eval(parsedBoxPlotsJson[i].end1 - parsedBoxPlotsJson[i].start1)/10 - eval(parsedBoxPlotsJson[i].end2 - parsedBoxPlotsJson[i].start2)/10)/2 );				
-		group.add(box);
-	}
-	group.rotation.set(0, Math.PI/2, 0);
-	scene.add(group);
-*/
 		//still needs the rotation
 	for(i in parsedBoxPlotsJson) {
 		var group = new THREE.Object3D();
@@ -294,18 +294,93 @@ function CreateBoxPlots() {
 	}
 }
 
+function CreateLabels() {
+	for(i in parsedPointsJson) {
+		var spritey = makeTextSprite( parsedPointsJson[i].name, 
+		{ fontsize: 24, borderColor: {r:255, g:0, b:0, a:1.0}, backgroundColor: {r:255, g:100, b:100, a:0.8} } );
+		spritey.position.set(parsedPointsJson[i].x + 0.03, parsedPointsJson[i].y - 0.03, Math.log10(parsedPointsJson[i].rank + 1) * -1);
+		//spritey.position.set(1, 0, -1.35);
+		labels.push(spritey);
+		scene.add( spritey );
+	}
+}
+
+function ShowLabels() {
+	if(Date.now() - labelsDate > 500) {
+		labelsDate = Date.now();
+		if(isShowingLabels)
+			for(i in labels)
+				scene.remove(labels[i]);
+		else
+			for(i in labels)
+				scene.add(labels[i]);
+		isShowingLabels = !isShowingLabels;
+	}
+}
+
+function CreateTriangle() {
+   var geom = new THREE.Geometry();
+    var v1 = new THREE.Vector3(0,0,0);
+    var v2 = new THREE.Vector3(1.15,0,0);
+    var v3 = new THREE.Vector3(1,0.6,0);
+    
+    console.log(geom.vertices)
+    geom.vertices.push(v1);
+    geom.vertices.push(v2);
+    geom.vertices.push(v3);
+    
+    geom.faces.push( new THREE.Face3( 0, 1, 2 ) );
+    geom.computeFaceNormals();
+    
+    triangle= new THREE.Mesh( geom, new THREE.MeshNormalMaterial({color: 0xff0000, transparent: true, opacity: 0.7, wireframe:true}) );	
+	triangle.rotation.set(0, Math.PI, 0);
+	triangle.position.set(0, 0, -maxLogInData - 0.1 );
+    scene.add(triangle);
+}
+
 function onWindowResize() {
-	camera.left = window.innerWidth / -2;
-	camera.right = window.innerWidth / 2;
-	camera.top = window.innerHeight / 2;
-	camera.bottom = window.innerHeight / -2;
-	camera.updateProjectionMatrix();
-	camerahelper.update();
+
+	sideCamera.left = window.innerWidth / -2;
+	sideCamera.right = window.innerWidth / 2;
+	sideCamera.top = window.innerHeight / 2;
+	sideCamera.bottom = window.innerHeight / -2;
+	sideCamera.updateProjectionMatrix();
+	sideCamera.update();
 	renderer.setSize(window.innerWidth, window.innerHeight);
+
 }
 
 function animate() 
 {
+	if (keyboard.pressed("A")) { //rotation while in the middle
+		sideCamera.rotation.set(sideCamera.rotation.x, sideCamera.rotation.y + 0.01, sideCamera.rotation.z); 
+	}
+	if (keyboard.pressed("D")) { //rotation while in the middle
+        sideCamera.rotation.set(sideCamera.rotation.x, sideCamera.rotation.y - 0.01, sideCamera.rotation.z);
+	}
+	if (keyboard.pressed("W")) { //rotation while in the middle
+		sideCamera.position.set(sideCamera.position.x, sideCamera.position.y, sideCamera.position.z + 0.005); 
+	}
+	if (keyboard.pressed("S")) { //rotation while in the middle
+        sideCamera.position.set(sideCamera.position.x, sideCamera.position.y, sideCamera.position.z - 0.005);
+	}
+	if (keyboard.pressed("Q")) { //rotation while in the middle
+		sideCamera.translateZ( 0.005 ); 
+	}
+	if (keyboard.pressed("E")) { //rotation while in the middle
+        sideCamera.translateZ( -0.005 );
+	}
+	if (keyboard.pressed("L")) { //labels on off
+        ShowLabels();
+	}
+	if (keyboard.pressed("C")) { //camera back to 0 0 0
+        sideCamera.position.set(0, 0, -1.44);
+	}
+	
+	//Update triangle
+	if(!(triangle == undefined))
+		triangle.rotation.set(triangle.rotation.x, triangle.rotation.y, -sideCamera.rotation.y + 90* (Math.PI / 180));
+
     requestAnimationFrame( animate );
 	render();	
 }
@@ -314,7 +389,27 @@ function animate()
 
 function render() 
 {	
-	renderer.render( scene, camera );
+	//renderer.render( scene, sideCamera );
+
+	var SCREEN_WIDTH = XSize, SCREEN_HEIGHT = YSize;
+	sideCamera.aspect = 0.5 * SCREEN_WIDTH / SCREEN_HEIGHT;
+	topCamera.aspect = 0.5 * SCREEN_WIDTH / SCREEN_HEIGHT;
+	sideCamera.updateProjectionMatrix();
+	topCamera.updateProjectionMatrix();
+	
+	// setViewport parameters:
+	//  lower_left_x, lower_left_y, viewport_width, viewport_height
+
+	renderer.setViewport( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT );
+	renderer.clear();
+
+	// left side
+	renderer.setViewport( 1, 1,   0.5 * SCREEN_WIDTH - 2, SCREEN_HEIGHT - 2 );
+	renderer.render( scene, sideCamera );
+
+	// right side
+	renderer.setViewport( 0.5 * SCREEN_WIDTH, 1,   0.5 * SCREEN_WIDTH - 2, SCREEN_HEIGHT - 2 );
+	renderer.render( scene, topCamera );
 }
 
 function drawEdge(source, target, semitransparent) { //draws an edge from "source" to "target"
@@ -336,7 +431,6 @@ function drawEdge(source, target, semitransparent) { //draws an edge from "sourc
 	scene.add( line );
 }
 
-
 function onDocumentMouseDown( event ) { //called when the user clicks
     event.preventDefault();
 
@@ -345,9 +439,9 @@ function onDocumentMouseDown( event ) { //called when the user clicks
       - ( ( event.clientY + window.pageYOffset - renderer.domElement.offsetTop ) / renderer.domElement.height ) * 2 + 1,
         0.5
     );
-    projector.unprojectVector( vector, camera );
-    var ray = new THREE.Raycaster( camera.position, 
-                             vector.sub( camera.position ).normalize() );
+    projector.unprojectVector( vector, sideCamera );
+    var ray = new THREE.Raycaster( sideCamera.position, 
+                             vector.sub( sideCamera.position ).normalize() );
 	ray.far = 1000;
 	ray.near = 1;
 	ray.precision = 1;
@@ -358,6 +452,78 @@ function onDocumentMouseDown( event ) { //called when the user clicks
 	}
 }
 
+function makeTextSprite( message, parameters )
+{
+	if ( parameters === undefined ) parameters = {};
+	
+	var fontface = parameters.hasOwnProperty("fontface") ? 
+		parameters["fontface"] : "Arial";
+	
+	var fontsize = parameters.hasOwnProperty("fontsize") ? 
+		parameters["fontsize"] : 18;
+	
+	var borderThickness = parameters.hasOwnProperty("borderThickness") ? 
+		parameters["borderThickness"] : 0.1;
+	
+	var borderColor = parameters.hasOwnProperty("borderColor") ?
+		parameters["borderColor"] : { r:0, g:0, b:0, a:1.0 };
+	
+	var backgroundColor = parameters.hasOwnProperty("backgroundColor") ?
+		parameters["backgroundColor"] : { r:255, g:255, b:255, a:1.0 };
+
+	//var spriteAlignment = THREE.SpriteAlignment.topLeft;
+		
+	var canvas = document.createElement('canvas');
+	var context = canvas.getContext('2d');
+	context.font = "Bold " + fontsize + "px " + fontface;
+    
+	// get size data (height depends only on font size)
+	var metrics = context.measureText( message );
+	var textWidth = metrics.width;
+	
+	// background color
+	context.fillStyle   = "rgba(" + backgroundColor.r + "," + backgroundColor.g + ","
+								  + backgroundColor.b + "," + backgroundColor.a + ")";
+	// border color
+	context.strokeStyle = "rgba(" + borderColor.r + "," + borderColor.g + ","
+								  + borderColor.b + "," + borderColor.a + ")";
+
+	context.lineWidth = borderThickness;
+	roundRect(context, borderThickness/2, borderThickness/2, textWidth + borderThickness, fontsize * 1.4 + borderThickness, 6);
+	// 1.4 is extra height factor for text below baseline: g,j,p,q.
+	
+	// text color
+	context.fillStyle = "rgba(0, 0, 0, 1.0)";
+
+	context.fillText( message, borderThickness, fontsize + borderThickness);
+	
+	// canvas contents will be used for a texture
+	var texture = new THREE.Texture(canvas) 
+	texture.needsUpdate = true;
+
+	var spriteMaterial = new THREE.SpriteMaterial( 
+		{ map: texture, useScreenCoordinates: false } );
+	var sprite = new THREE.Sprite( spriteMaterial );
+	sprite.scale.set(0.4,0.2,0.002);
+	return sprite;	
+}
+
+function roundRect(ctx, x, y, w, h, r) 
+{
+    ctx.beginPath();
+    ctx.moveTo(x+r, y);
+    ctx.lineTo(x+w-r, y);
+    ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+    ctx.lineTo(x+w, y+h-r);
+    ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+    ctx.lineTo(x+r, y+h);
+    ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+    ctx.lineTo(x, y+r);
+    ctx.quadraticCurveTo(x, y, x+r, y);
+    ctx.closePath();
+    ctx.fill();
+	ctx.stroke();   
+}
 </script>
 
 <div align="center"><div id="data-table-cont"></div><table id="data-table"></table></div>

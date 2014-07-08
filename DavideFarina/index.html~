@@ -385,7 +385,6 @@ function CreateGraph() {
 		if(parseFloat(samples[j].PC3) < minZ)
 			minZ = parseFloat(samples[j].PC3);
 	}	
-	alert(minX);
 
 	var sphereMat;
 	for(var i = 0; i < samples.length; i++) { //samples to objects
