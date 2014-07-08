@@ -216,6 +216,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 		// angle from z-axis around y-axis
 
 		var theta = Math.atan2( offset.x, offset.z );
+		//var theta = 0;
 
 		// angle from y-axis
 
@@ -386,6 +387,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 	}
 
 	function onMouseWheel( event ) {
+/*
 
 		if ( scope.enabled === false || scope.noZoom === true ) return;
 
@@ -412,6 +414,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 		}
 
 	}
+*/
 
 	function onKeyDown( event ) {
 
