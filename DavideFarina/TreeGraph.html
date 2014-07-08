@@ -410,7 +410,7 @@ function render()
 {	
 	//renderer.render( scene, sideCamera );
 
-	var SCREEN_WIDTH = XSize, SCREEN_HEIGHT = YSize;
+	var SCREEN_WIDTH = renderer.domElement.width, SCREEN_HEIGHT = renderer.domElement.height;
 	sideCamera.aspect = 0.5 * SCREEN_WIDTH / SCREEN_HEIGHT;
 	topCamera.aspect = 0.5 * SCREEN_WIDTH / SCREEN_HEIGHT;
 	sideCamera.updateProjectionMatrix();
