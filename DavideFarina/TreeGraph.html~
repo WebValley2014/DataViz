@@ -62,7 +62,7 @@
 		</nav>
 		<div class="navseparator"></div>
 		<main>
-			<div align="center"><p>Controls: Still WIP.</p></div>
+			<div align="center"><p>Controls: A and D to rotate. W and S to go up and down. Q and E to zoom. Left and Right mouse buttons to zoom the 2nd graph.</p></div>
 			<div id="threeJsCanvas" style="position: static;" align="center"></canvas></div>
 <!-- ----------------------------------------------------------------------------------------------------------------------------------- -->
         <script type="text/javascript">
@@ -99,6 +99,7 @@ var container, scene, renderer, controls;
 var topcamera, sideCamera;
 
 document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+document.addEventListener( 'mouseup', onDocumentMouseUp, false );
 var projector = new THREE.Projector();
 
 //My Variables
@@ -115,6 +116,8 @@ var isShowingLabels = true;
 var labelsDate = Date.now();
 var triangle; 
 var maxLogInData = 0;
+var leftMouseIsDown = false;
+var rightMouseIsDown = false;
 
 var camerahelper;
 
@@ -188,7 +191,7 @@ function init()
 	CreateGraph();
 	call("http://localhost/DavideFarina/boxPlotsData.txt");
 	ParseBoxPlotsJSON();
-	CreateBoxPlots();
+	//CreateBoxPlots();
 	CreateLabels();
 	CreateTriangle();
 }
@@ -306,7 +309,7 @@ function CreateLabels() {
 	for(i in parsedPointsJson) {
 		var spritey = makeTextSprite( parsedPointsJson[i].name, 
 		{ fontsize: 24, borderColor: {r:255, g:0, b:0, a:1.0}, backgroundColor: {r:255, g:100, b:100, a:0.8} } );
-		spritey.position.set(parsedPointsJson[i].x + 0.03, parsedPointsJson[i].y - 0.03, Math.log10(parsedPointsJson[i].rank + 1) * -1);
+		spritey.position.set(parsedPointsJson[i].x + 0.12, parsedPointsJson[i].y - 0.03, Math.log10(parsedPointsJson[i].rank + 1) * -1);
 		//spritey.position.set(1, 0, -1.35);
 		labels.push(spritey);
 		scene.add( spritey );
@@ -393,6 +396,12 @@ function animate()
 
     requestAnimationFrame( animate );
 	render();	
+
+	//Mouse Zoom
+	if(leftMouseIsDown)
+		topCamera.position.set(topCamera.position.x, topCamera.position.y, topCamera.position.z + 0.05);
+	if(rightMouseIsDown)
+		topCamera.position.set(topCamera.position.x, topCamera.position.y, topCamera.position.z - 0.05);
 }
 
 
@@ -442,23 +451,20 @@ function drawEdge(source, target, semitransparent) { //draws an edge from "sourc
 }
 
 function onDocumentMouseDown( event ) { //called when the user clicks
-    event.preventDefault();
-    var vector = new THREE.Vector3(
-        ( ( (event.clientX - 1000)  - renderer.domElement.offsetLeft ) / renderer.domElement.width ) * 2 - 1, 
-      - ( ( event.clientY + window.pageYOffset - renderer.domElement.offsetTop ) / renderer.domElement.height ) * 2 + 1,
-        0.5
-    );
-    projector.unprojectVector( vector, topCamera );
-    var ray = new THREE.Raycaster( topCamera.position, 
-                             vector.sub( topCamera.position ).normalize() );
-	ray.far = 1000;
-	ray.near = 1;
-	ray.precision = 1;
-    var intersects = ray.intersectObjects( objects );	
-	
-    if ( intersects.length > 0 ) { // called when the user clicks on an object
-		console.log("found one");
-		scene.remove(intersects[0].object);
+	switch(event.button) {
+		case 0: { //left
+			leftMouseIsDown = true; break; }
+		case 2: { //right
+			rightMouseIsDown = true; break; }
+	}
+}
+
+function onDocumentMouseUp( event ) { //called when the user clicks
+	switch(event.button) {
+		case 0: { //left
+			leftMouseIsDown = false; break;}
+		case 2: { //right
+			rightMouseIsDown = false; break; }
 	}
 }
 
