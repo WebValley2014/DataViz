@@ -135,7 +135,7 @@ function init()
 	// set up topCamera
 	topCamera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
 	scene.add(topCamera);
-	topCamera.position.set(0, 0, -3);
+	topCamera.position.set(0, 0, -5.2);
 	topCamera.rotation.set(0, Math.PI, 0);
 
 
@@ -170,6 +170,14 @@ function init()
 	scene.add(light);
 	var ambientLight = new THREE.AmbientLight(0x666666);
 	scene.add(ambientLight);
+
+	var centralLight = new THREE.PointLight(0xffffff);
+	centralLight.position.set(0, 0, 0);
+	scene.add(centralLight);
+
+	var cameraLight = new THREE.PointLight(0xbbbbbb);
+	cameraLight.position.set(0, 0, -6);
+	scene.add(cameraLight);
 
 	/////////////
 	// DRAWING //
@@ -359,10 +367,12 @@ function animate()
         sideCamera.rotation.set(sideCamera.rotation.x, sideCamera.rotation.y - 0.01, sideCamera.rotation.z);
 	}
 	if (keyboard.pressed("W")) { //rotation while in the middle
-		sideCamera.position.set(sideCamera.position.x, sideCamera.position.y, sideCamera.position.z + 0.005); 
+		if(sideCamera.position.z < (-1.44 + 1))
+			sideCamera.position.set(sideCamera.position.x, sideCamera.position.y, sideCamera.position.z + 0.005); 
 	}
 	if (keyboard.pressed("S")) { //rotation while in the middle
-        sideCamera.position.set(sideCamera.position.x, sideCamera.position.y, sideCamera.position.z - 0.005);
+		if(sideCamera.position.z > (-1.44 - 1))
+        	sideCamera.position.set(sideCamera.position.x, sideCamera.position.y, sideCamera.position.z - 0.005);
 	}
 	if (keyboard.pressed("Q")) { //rotation while in the middle
 		sideCamera.translateZ( 0.005 ); 
@@ -433,22 +443,22 @@ function drawEdge(source, target, semitransparent) { //draws an edge from "sourc
 
 function onDocumentMouseDown( event ) { //called when the user clicks
     event.preventDefault();
-
     var vector = new THREE.Vector3(
-        ( ( event.clientX - renderer.domElement.offsetLeft ) / renderer.domElement.width ) * 2 - 1, //5px is the correction for the border around the canvas
+        ( ( (event.clientX - 800)  - renderer.domElement.offsetLeft ) / renderer.domElement.width ) * 2 - 1, 
       - ( ( event.clientY + window.pageYOffset - renderer.domElement.offsetTop ) / renderer.domElement.height ) * 2 + 1,
         0.5
     );
-    projector.unprojectVector( vector, sideCamera );
-    var ray = new THREE.Raycaster( sideCamera.position, 
-                             vector.sub( sideCamera.position ).normalize() );
+    projector.unprojectVector( vector, topCamera );
+    var ray = new THREE.Raycaster( topCamera.position, 
+                             vector.sub( topCamera.position ).normalize() );
 	ray.far = 1000;
 	ray.near = 1;
 	ray.precision = 1;
-    var intersects = ray.intersectObjects( objects );
-
+    var intersects = ray.intersectObjects( objects );	
+	
     if ( intersects.length > 0 ) { // called when the user clicks on an object
-
+		console.log("found one");
+		scene.remove(intersects[0].object);
 	}
 }
 
