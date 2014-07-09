@@ -101,12 +101,20 @@ if __name__ == "__main__":
     filename = '../data_template/PRE_ML/OUTPUT/X_l2r_l2loss_svc_SVM_std_featurelist.txt'
     associations = {}
     h = open(filename, 'r')
+    header = True
     for i in h:
         i = i.strip()
         i = i.split("\t")
         j = i[1]
         k = i[2]
-        associations[j] = k
+        kd = 0
+        if not header:
+            k2 = float(i[4])
+            k3 = float(i[5])
+            kd = k2 - k3
+        print kd
+        associations[j] = (k,kd)
+        header = False
     h.close()
 
     albero = ctree.tree
@@ -117,18 +125,136 @@ if __name__ == "__main__":
     whole.append(albero.clade)
     cid = 0
     albero.clade.id = cid
+    albero.clade.depth = 0
     cid += 1
     while len(whole) > 0:
         current = whole.pop()
+        cdepth = current.depth
         tempo = []
+        if len(current.clades) == 1:
+            if current.name in associations:
+                rank = associations[current.name][0]
+            else:
+                rank = 0
+            if current.clades[0].name in associations:
+                rankc = associations[current.clades[0].name][0]
+            else:
+                rankc = 0
+            if rankc <= rank:
+                print "QUI"
+                current.clades = current.clades[0].clades
+                whole.append(current)
+                continue
+
+
+        refactored = []
         for i in current.clades:
+            if len(i.clades) == 0:
+                if current.name in associations:
+                    rank = associations[current.name][0]
+                else:
+                    rank = 0
+                if i.name in associations:
+                    rankc = associations[i.name][0]
+                else:
+                    rankc = 0
+                if rankc <= rank:
+                    print "QUI2"
+                    # current.clades = current.clades[0].clades
+                    continue
+            refactored.append(i)
             i.id = cid
+            i.depth = cdepth + 1
             tempo.append(i.id)
             cid += 1
             whole.append(i)
-        dati.append((current.id, current.name, current.r, current.theta, tempo))
+        current.clades = refactored
+
+        # for i in current.clades:
+        #     i.id = cid
+        #     i.depth = cdepth + 1
+        #     tempo.append(i.id)
+        #     cid += 1
+        #     whole.append(i)
+        dati.append((current.id, current.name, current.r, current.theta, tempo, cdepth))
     # print dati
-    print associations
+    # print associations
+
+    ctree.draw( 'prova2.pdf', 
+                out_format = args['format'], 
+                out_dpi = args['dpi'],
+                out_size = args['size'],
+                out_pad = args['pad'] )
+
+
+    print "INIZIO"
+    albero = ctree.tree
+    stringa = "{\n\"data\":[ "
+    dati = []
+    nomi = {}
+    whole = []
+    whole.append(albero.clade)
+    cid = 0
+    albero.clade.id = cid
+    albero.clade.depth = 0
+    cid += 1
+    while len(whole) > 0:
+        current = whole.pop()
+        cdepth = current.depth
+        tempo = []
+        if len(current.clades) == 1:
+            if current.name in associations:
+                rank = associations[current.name][0]
+            else:
+                rank = 0
+            if current.clades[0].name in associations:
+                rankc = associations[current.clades[0].name][0]
+            else:
+                rankc = 0
+            if rankc <= rank:
+                print "QUI"
+                current.clades = current.clades[0].clades
+                whole.append(current)
+                continue
+
+        refactored = []
+        for i in current.clades:
+            if len(i.clades) == 0:
+                if current.name in associations:
+                    rank = associations[current.name][0]
+                else:
+                    rank = 0
+                if i.name in associations:
+                    rankc = associations[i.name][0]
+                else:
+                    rankc = 0
+                if rankc <= rank:
+                    print "QUI2"
+                    # current.clades = current.clades[0].clades
+                    continue
+            refactored.append(i)
+            i.id = cid
+            i.depth = cdepth + 1
+            tempo.append(i.id)
+            cid += 1
+            whole.append(i)
+        current.clades = refactored
+        dati.append((current.id, current.name, current.r, current.theta, tempo, cdepth))
+    # print dati
+    # print associations
+    print "FINE"
+
+    filename = '../data_template/PRE_ML/names.txt'
+    alias = {}
+    h = open(filename, 'r')
+    for i in h:
+        i = i.strip()
+        i = i.split("\t")
+        j = i[1].split(";")
+        alias[i[0]] = j[-1]
+    h.close()
+
+
 
     for i in range(0, len(dati)):
         angle = dati[i][3]
@@ -136,20 +262,28 @@ if __name__ == "__main__":
         idc = dati[i][0]
         name = dati[i][1]
         rank = 0
+        cha = 0
         if name in associations:
-            rank = associations[name]
-            print rank
+            rank = associations[name][0]
+            cha = associations[name][1]
+            # print rank
         children = dati[i][4]
+        depth = dati[i][5]
         x=r*math.cos(angle)
         y=r*math.sin(angle)
         # print r, angle, x, y
         cstringa = "\n" + "{" 
         cstringa = cstringa + "\"id\": " + str(idc)
-        cstringa = cstringa + ", \"name\": \"" + str(name) + "\""
+        if name in alias:
+            cstringa = cstringa + ", \"name\": \"" + str(alias[name]) + "\""
+        else:
+            cstringa = cstringa + ", \"name\": \"" + str(name) + "\""
         cstringa = cstringa + ", \"x\": " + str(x)
         cstringa = cstringa + ", \"y\": " + str(y)
         cstringa = cstringa + ", \"rank\": " + str(rank)
         cstringa = cstringa + ", \"childs\": " + str(children)
+        cstringa = cstringa + ", \"depth\": " + str(depth)
+        cstringa = cstringa + ", \"change\": " + str(cha)
         cstringa = cstringa + "},"
         stringa = stringa + cstringa
     stringa  = stringa[0:-1] + "\n]}\n"
@@ -158,3 +292,4 @@ if __name__ == "__main__":
     text_file.write(stringa)
     text_file.close()
 
+    print associations
