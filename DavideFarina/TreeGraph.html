@@ -192,7 +192,7 @@ function init()
 	// DRAWING //
 	/////////////
 
-	call("http://localhost/DavideFarina/prova_json_5.txt");
+	call("http://localhost/DavideFarina/prova_json_6.txt");
 	ParsePointsJSON();
 	CreateGraph();
 	call("http://localhost/DavideFarina/boxPlotsData.txt");
@@ -244,8 +244,12 @@ function CreateGraph() {
 		var sphereMat;
 		if(parsedPointsJson[i].id == 0)
 			sphereMat = new THREE.MeshLambertMaterial({color: 0x000000, wireframe:false, ambient:0x000000});
-		else
+		else if(parseFloat(parsedPointsJson[i].change) < 0)
 			sphereMat = new THREE.MeshLambertMaterial({color: 0x00ff00, wireframe:false, ambient:0x444444});
+		else if(parseFloat(parsedPointsJson[i].change) >= 0)
+			sphereMat = new THREE.MeshLambertMaterial({color: 0xff0000, wireframe:false, ambient:0x444444});
+		else
+			sphereMat = new THREE.MeshLambertMaterial({color: 0xcccccc, wireframe:false, ambient:0x444444});
 		var sphere = new THREE.Mesh(sphereGeom, sphereMat);
 		if(parsedPointsJson[i].rank != 0)
 			sphere.position.set(parsedPointsJson[i].x, parsedPointsJson[i].y, Math.log10(parsedPointsJson[i].rank + 1) * -1);
@@ -442,7 +446,6 @@ function render()
 		// setViewport parameters:
 		//  lower_left_x, lower_left_y, viewport_width, viewport_height
 
-		renderer.setViewport( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT );
 		renderer.clear();
 
 		// left side
