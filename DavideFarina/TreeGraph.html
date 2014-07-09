@@ -192,7 +192,7 @@ function init()
 	// DRAWING //
 	/////////////
 
-	call("http://localhost/DavideFarina/prova_json_6.txt");
+	call("http://localhost/DavideFarina/dendro.json");
 	ParsePointsJSON();
 	CreateGraph();
 	call("http://localhost/DavideFarina/boxPlotsData.txt");
@@ -320,10 +320,19 @@ function CreateLabels() {
 	for(i in parsedPointsJson) {
 		var spritey = makeTextSprite( parsedPointsJson[i].name, 
 		{ fontsize: 24, borderColor: {r:255, g:0, b:0, a:1.0}, backgroundColor: {r:255, g:100, b:100, a:0.8} } );
-		spritey.position.set(parsedPointsJson[i].x + 0.15, parsedPointsJson[i].y - 0.03, Math.log10(parsedPointsJson[i].rank + 1) * -1);
-		//spritey.position.set(1, 0, -1.35);
+		if(parsedPointsJson[i].rank != 0)
+			spritey.position.set(parsedPointsJson[i].x + 0.15, parsedPointsJson[i].y - 0.03, Math.log10(parsedPointsJson[i].rank + 1) * -1);
+		else
+			spritey.position.set(parsedPointsJson[i].x + 0.15, parsedPointsJson[i].y - 0.03, Math.log10(maxZ + 1) * -1);
 		labels.push(spritey);
 		scene.add( spritey );
+
+/*
+		if(parsedPointsJson[i].rank != 0)
+			sphere.position.set(parsedPointsJson[i].x, parsedPointsJson[i].y, Math.log10(parsedPointsJson[i].rank + 1) * -1);
+		else
+			sphere.position.set(parsedPointsJson[i].x, parsedPointsJson[i].y, Math.log10(maxZ + 1) * -1);
+*/
 	}
 }
 

@@ -192,7 +192,7 @@ function init()
 	// DRAWING //
 	/////////////
 
-	call("http://localhost/DavideFarina/prova_json_6.txt");
+	call("http://localhost/DavideFarina/dendro.json");
 	ParsePointsJSON();
 	CreateGraph();
 	call("http://localhost/DavideFarina/boxPlotsData.txt");
@@ -246,7 +246,7 @@ function CreateGraph() {
 			sphereMat = new THREE.MeshLambertMaterial({color: 0x000000, wireframe:false, ambient:0x000000});
 		else if(parseFloat(parsedPointsJson[i].change) < 0)
 			sphereMat = new THREE.MeshLambertMaterial({color: 0x00ff00, wireframe:false, ambient:0x444444});
-		else if(parseFloat(parsedPointsJson[i].change) >= 0)
+		else if(parseFloat(parsedPointsJson[i].change) > 0)
 			sphereMat = new THREE.MeshLambertMaterial({color: 0xff0000, wireframe:false, ambient:0x444444});
 		else
 			sphereMat = new THREE.MeshLambertMaterial({color: 0xcccccc, wireframe:false, ambient:0x444444});
@@ -321,9 +321,15 @@ function CreateLabels() {
 		var spritey = makeTextSprite( parsedPointsJson[i].name, 
 		{ fontsize: 24, borderColor: {r:255, g:0, b:0, a:1.0}, backgroundColor: {r:255, g:100, b:100, a:0.8} } );
 		spritey.position.set(parsedPointsJson[i].x + 0.15, parsedPointsJson[i].y - 0.03, Math.log10(parsedPointsJson[i].rank + 1) * -1);
-		//spritey.position.set(1, 0, -1.35);
 		labels.push(spritey);
 		scene.add( spritey );
+
+/*
+		if(parsedPointsJson[i].rank != 0)
+			sphere.position.set(parsedPointsJson[i].x, parsedPointsJson[i].y, Math.log10(parsedPointsJson[i].rank + 1) * -1);
+		else
+			sphere.position.set(parsedPointsJson[i].x, parsedPointsJson[i].y, Math.log10(maxZ + 1) * -1);
+*/
 	}
 }
 
