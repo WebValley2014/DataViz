@@ -30,7 +30,9 @@ var CHART = {
 
     },
     _updateData : function (rowN) {
-        var line = this.file[rowN + 2].slice(1, -1);
+	self = this;
+	console.log('update data got:' + rowN);
+        var line = self.file[rowN].slice(1, -1);
 	//console.log(line);
 	for(var i = 1, j = 0; i < 30; i+= 3, j++)
 	    this.data[i] = line[j];
@@ -199,6 +201,10 @@ var CHART = {
 }
 
 var TABLE = {
+    go:function() {
+	this._init();
+	this._buildTable();
+    },
     _init : function() {
 	this.cont_id = "data-table";
 	this.file = undefined;
@@ -223,8 +229,8 @@ var TABLE = {
 	var thead = document.createElement("thead");
 	var row = document.createElement("tr");
 	for(i in this.headers) {
-	    console.log(i);
-	    console.log(this.headers[i]);
+	    //console.log(i);
+	    //console.log(this.headers[i]);
 	    var h = document.createElement("th");
 	    h.innerHTML = this.headers[i];
 	    row.appendChild(h);
@@ -235,7 +241,15 @@ var TABLE = {
 	var tbody = document.createElement("tbody");
 	for(var i = 2; i < this.file.length; i++) {
 	    var line = this.file[i];
+	    var newI = i;
 	    var row = document.createElement("tr");
+	    row.setAttribute('value', i);
+	    row.onclick = function() { 
+	    	d3.selectAll("tbody tr").attr("style", "background: none");
+	    	this.style.backgroundColor = "yellow";
+	    	//console.log(newI);
+	    	return CHART.updateChart(this.getAttribute('value'));
+	    };
 	    
 	    for(var j in line) {
 		var td = document.createElement("td");
