@@ -38,10 +38,10 @@ var CHART = {
 			var line = this.lines[i];
 			if(i == 0) {
 				var headers = line.split("\t");
-				console.log(headers);
+				//console.log(headers);
 				for(var j = 1; j < 11; j++) { 
 					var h = headers[j];
-					console.log(h);
+					//console.log(h);
 					//this.labels.push("A" + h);
 					this.labels.push(h);
 					//this.labels.push("B" + h);
@@ -59,8 +59,8 @@ var CHART = {
 					this.data[i * 3 + j] = this._getSum(i, "0");
 			}
 		}
-		console.log(this.data.length);
-		console.log(this.labels.length);
+		//console.log(this.data.length);
+		//console.log(this.labels.length);
     },
 	_getSum: function(column, which) {
 		var sum = 0;
@@ -133,7 +133,7 @@ var CHART = {
 		var labels = this.labels;
 		var getLabelIndex = this.getLabelIndex;
 		var getColor = this.getColor;
-		console.log(this.colors);
+		//console.log(this.colors);
         bars = this.graph.selectAll('bar').data(this.data);
 
         bars.enter() 
@@ -175,8 +175,8 @@ var CHART = {
 			return this.offset;
 	},
 	getLabelIndex: function(dataIndex) {
-		console.log("LabelIndex: " + parseInt(Math.abs(dataIndex / 3)));
-		console.log("DataIndex: " + dataIndex);
+	//	console.log("LabelIndex: " + parseInt(Math.abs(dataIndex / 3)));
+		//console.log("DataIndex: " + dataIndex);
 		return parseInt(Math.abs(dataIndex / 3));
 	},
 	getColor: function(dataIndex) {
@@ -193,5 +193,53 @@ var CHART = {
 
 }
 
+var TABLE = {
+    _init : function() {
+	this.cont_id = "data-table";
+	this.file = undefined;
+	this.headers = undefined;
 
+	this._loadData();
+	this._extractHeaders();
+    },
+    
+    _loadData : function() {
+	this.file = CHART.file;
+    },
+    _extractHeaders: function() {
+	var headers = [];
+	for(i in this.file[1]) {
+	    headers.push(this.file[1][i].split(";").slice(-2).join(";"));
+	}
+	this.headers = headers;
+    },
+    _buildTable: function() {
+	var table = document.createElement("table");
+	var thead = document.createElement("thead");
+	var row = document.createElement("tr");
+	for(i in this.headers) {
+	    console.log(i);
+	    console.log(this.headers[i]);
+	    var h = document.createElement("th");
+	    h.innerHTML = this.headers[i];
+	    row.appendChild(h);
+	}
+	thead.appendChild(row);
+	table.appendChild(thead);
+	//body
+	var tbody = document.createElement("tbody");
+	for(var i = 2; i < this.file.length; i++) {
+	    var line = this.file[i];
+	    var row = document.createElement("tr");
+	    for(var j in line) {
+		var td = document.createElement("td");
+		td.innerHTML = line[j];
+		row.appendChild(td);
+	    }
+	    tbody.appendChild(row);
+	}
+	table.appendChild(tbody);
+	document.getElementById(this.cont_id).appendChild(table);
+    }
+}
 
