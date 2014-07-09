@@ -246,7 +246,7 @@ function CreateGraph() {
 			sphereMat = new THREE.MeshLambertMaterial({color: 0x000000, wireframe:false, ambient:0x000000});
 		else if(parseFloat(parsedPointsJson[i].change) < 0)
 			sphereMat = new THREE.MeshLambertMaterial({color: 0x00ff00, wireframe:false, ambient:0x444444});
-		else if(parseFloat(parsedPointsJson[i].change) >= 0)
+		else if(parseFloat(parsedPointsJson[i].change) > 0)
 			sphereMat = new THREE.MeshLambertMaterial({color: 0xff0000, wireframe:false, ambient:0x444444});
 		else
 			sphereMat = new THREE.MeshLambertMaterial({color: 0xcccccc, wireframe:false, ambient:0x444444});
