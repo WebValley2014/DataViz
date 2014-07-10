@@ -870,27 +870,27 @@ class CircTree(PpaTree):
                         s = self.default_clade_marker_size,
                         zorder=12)
             # for x,y,l in zip(self._t,self._r,self.clade_marker_label):
-            for x,y in zip(self._t,self._r):
-               ax.text( x, y, "A", va = 'center', ha = 'center' )
+            # for x,y in zip(self._t,self._r):
+               # ax.text( x, y, "A", va = 'center', ha = 'center' )
 
         # print "Step 2"
 
-        # if self._tl: # plot ???
-        #     print "Block 2"
-        #     mrkrs = set(self.clade_marker_shape)
-        #     print mrkrs
-        #     # this needs to be greatly optimized
-        #     for m in mrkrs:
-        #         ax.scatter( [t for i,t in enumerate(self._tl) if self.clade_marker_shape[i] == m], 
-        #                     [t for i,t in enumerate(self._rl) if self.clade_marker_shape[i] == m], 
-        #                     marker = m, #self.clade_marker_shape,
-        #                     c = [t for i,t in enumerate(self.clade_marker_color) if self.clade_marker_shape[i] == m],
-        #                     edgecolor = [t for i,t in enumerate(self.clade_marker_edge_color) if self.clade_marker_shape[i] == m],
-        #                     lw = [t for i,t in enumerate(self.clade_marker_edge_width) if self.clade_marker_shape[i] == m],
-        #                     s = [t for i,t in enumerate(self.clade_marker_size) if self.clade_marker_shape[i] == m],
-        #                     zorder=12)
-        #     for x,y,l,s,c in zip(self._tl,self._rl,self.clade_marker_label,self.clade_marker_font_size,self.clade_marker_font_color):
-        #         ax.text( x, y, l, va = 'center', ha = 'center', fontstretch = 30, fontsize = s, zorder = 35, color = c )
+        if self._tl: # plot ???
+            print "Block 2"
+            mrkrs = set(self.clade_marker_shape)
+            print mrkrs
+            # this needs to be greatly optimized
+            for m in mrkrs:
+                ax.scatter( [t for i,t in enumerate(self._tl) if self.clade_marker_shape[i] == m], 
+                            [t for i,t in enumerate(self._rl) if self.clade_marker_shape[i] == m], 
+                            marker = m, #self.clade_marker_shape,
+                            c = [t for i,t in enumerate(self.clade_marker_color) if self.clade_marker_shape[i] == m],
+                            edgecolor = [t for i,t in enumerate(self.clade_marker_edge_color) if self.clade_marker_shape[i] == m],
+                            lw = [t for i,t in enumerate(self.clade_marker_edge_width) if self.clade_marker_shape[i] == m],
+                            s = [t for i,t in enumerate(self.clade_marker_size) if self.clade_marker_shape[i] == m],
+                            zorder=12)
+            for x,y,l,s,c in zip(self._tl,self._rl,self.clade_marker_label,self.clade_marker_font_size,self.clade_marker_font_color):
+                ax.text( x, y, l, va = 'center', ha = 'center', fontstretch = 30, fontsize = s, zorder = 35, color = c )
 
         print "Step 3"
         # set up branches
@@ -900,77 +900,77 @@ class CircTree(PpaTree):
         
         
         # print "Step 4"
-        # if len( self._wing_thetas ) < 2:
-        #     print "Block 3"
-        #     self._wing_thetas.append(0)
-        #     self._wing_radii.append(0)
-        #     self._wing_widths.append(0)
-        #     self._wing_bottoms.append(0)
-        # wbar = ax.bar( self._wing_thetas, self._wing_radii,
-        #                width = self._wing_widths,
-        #                bottom = self._wing_bottoms,
-        #                alpha = self.annotation_background_alpha,
-        #                color = self._wing_colors,
-        #                edgecolor = self._wing_colors,
-        #                )
+        if len( self._wing_thetas ) < 2:
+            print "Block 3"
+            self._wing_thetas.append(0)
+            self._wing_radii.append(0)
+            self._wing_widths.append(0)
+            self._wing_bottoms.append(0)
+        wbar = ax.bar( self._wing_thetas, self._wing_radii,
+                       width = self._wing_widths,
+                       bottom = self._wing_bottoms,
+                       alpha = self.annotation_background_alpha,
+                       color = self._wing_colors,
+                       edgecolor = self._wing_colors,
+                       )
 
         # print "Step 5"
-        # for lev,d in self.int_levs.items():
-        #     if 'internal_label' in d:
-        #         start_rot = ( self.internal_labels_rotation 
-        #                          if self.internal_labels_rotation 
-        #                              else self.start_rotation )
-        #         self._label_r.append( 1.0/self._max_depth*lev )
-        #         self._label_theta.append( start_rot*rpi/180.0 ) 
-        #         self._label.append( d['internal_label'] )
-        #         rot = start_rot+90 if 180.0 < start_rot%360.0 < 360.0 else start_rot-90
-        #         rot = (rot + 360.0) % 360.0
-        #         self._label_rot.append( rot )
-        #         self._annotation_font_size.append( d['internal_label_font_size'] 
-        #                                                 if 'internal_label_font_size' in d 
-        #                                                     else int_attr_d['internal_label_font_size'][1] )
-        #         self._annotation_font_stretch.append( 100 )
+        for lev,d in self.int_levs.items():
+            if 'internal_label' in d:
+                start_rot = ( self.internal_labels_rotation 
+                                 if self.internal_labels_rotation 
+                                     else self.start_rotation )
+                self._label_r.append( 1.0/self._max_depth*lev )
+                self._label_theta.append( start_rot*rpi/180.0 ) 
+                self._label.append( d['internal_label'] )
+                rot = start_rot+90 if 180.0 < start_rot%360.0 < 360.0 else start_rot-90
+                rot = (rot + 360.0) % 360.0
+                self._label_rot.append( rot )
+                self._annotation_font_size.append( d['internal_label_font_size'] 
+                                                        if 'internal_label_font_size' in d 
+                                                            else int_attr_d['internal_label_font_size'][1] )
+                self._annotation_font_stretch.append( 100 )
 
         # print "Step 6"
 
-        # for x,y,s,r,f,fs in zip( self._label_r, self._label_theta,
-        #                          self._label, self._label_rot,
-        #                          self._annotation_font_size, 
-        #                          self._annotation_font_stretch ):
-        #     if r < 0.0:
-        #         r = -r
-        #         r %= 360.0
-        #         y2 = y/rpi*180.0%360.0
-        #         if 0 < y2 <= 90:
-        #             ax.text( y, x, s, rotation = r+90,
-        #                     ha="left", va="bottom",
-        #                     fontsize = f,
-        #                     fontstretch = fs,
-        #                     zorder = 30 )
-        #         if 90 < y2 <= 180:
-        #             ax.text( y, x, s, rotation = r-90,
-        #                     ha="right", va="bottom",
-        #                     fontsize = f,
-        #                     fontstretch = fs,
-        #                     zorder = 30 )
-        #         if 180 < y2 <= 270:
-        #             ax.text( y, x, s, rotation = r+90,
-        #                     ha="right", va="top",
-        #                     fontsize = f,
-        #                     fontstretch = fs,
-        #                     zorder = 30 )
-        #         if 270 < y2 <= 360 or y2 == 0.0:
-        #             ax.text( y, x, s, rotation = r-90,
-        #                     ha="left", va="top",
-        #                     fontsize = f,
-        #                     fontstretch = fs,
-        #                     zorder = 30 )
-        #     else:
-        #         ax.text( y, x, s, rotation = r,
-        #                  ha="center", va="center",
-        #                  fontsize = f,
-        #                  fontstretch = fs,
-        #                  zorder = 30 )
+        for x,y,s,r,f,fs in zip( self._label_r, self._label_theta,
+                                 self._label, self._label_rot,
+                                 self._annotation_font_size, 
+                                 self._annotation_font_stretch ):
+            if r < 0.0:
+                r = -r
+                r %= 360.0
+                y2 = y/rpi*180.0%360.0
+                if 0 < y2 <= 90:
+                    ax.text( y, x, s, rotation = r+90,
+                            ha="left", va="bottom",
+                            fontsize = f,
+                            fontstretch = fs,
+                            zorder = 30 )
+                if 90 < y2 <= 180:
+                    ax.text( y, x, s, rotation = r-90,
+                            ha="right", va="bottom",
+                            fontsize = f,
+                            fontstretch = fs,
+                            zorder = 30 )
+                if 180 < y2 <= 270:
+                    ax.text( y, x, s, rotation = r+90,
+                            ha="right", va="top",
+                            fontsize = f,
+                            fontstretch = fs,
+                            zorder = 30 )
+                if 270 < y2 <= 360 or y2 == 0.0:
+                    ax.text( y, x, s, rotation = r-90,
+                            ha="left", va="top",
+                            fontsize = f,
+                            fontstretch = fs,
+                            zorder = 30 )
+            else:
+                ax.text( y, x, s, rotation = r,
+                         ha="center", va="center",
+                         fontsize = f,
+                         fontstretch = fs,
+                         zorder = 30 )
 
         # print "Step 7"
 
@@ -979,78 +979,78 @@ class CircTree(PpaTree):
         ax.add_collection(bcoll)
 
         # print "Step 8"
-        # print self._ext_patches        
+        print self._ext_patches        
 
-        # for p in self._ext_patches:
-        #     ax.add_patch(p)
-        # #for l in self._ext_lines:
-        # #    ax.add_line(l)
+        for p in self._ext_patches:
+            ax.add_patch(p)
+        #for l in self._ext_lines:
+        #    ax.add_line(l)
 
         # print "Step 9"
 
-        # offset = self._wing_tot_offset + self.annotation_background_offset
-        # for l,v in self.ext_levs.items():
-        #     for p in ['ring_internal_separator_thickness','ring_external_separator_thickness']:
-        #         if p in v and float(v[p]) > 0.0:
-        #             bot = offset + self._ext_bottoms[l] 
-        #             if p == 'ring_external_separator_thickness':
-        #                 bot += self._ext_max_height[l]*0.1 if l in self._ext_max_height else 0.1
+        offset = self._wing_tot_offset + self.annotation_background_offset
+        for l,v in self.ext_levs.items():
+            for p in ['ring_internal_separator_thickness','ring_external_separator_thickness']:
+                if p in v and float(v[p]) > 0.0:
+                    bot = offset + self._ext_bottoms[l] 
+                    if p == 'ring_external_separator_thickness':
+                        bot += self._ext_max_height[l]*0.1 if l in self._ext_max_height else 0.1
 
-        #             lw = float(v[p])
-        #             col = v['ring_separator_color'] 
-        #             line = lines.Line2D( linearized_circle, [bot]*len(linearized_circle), linewidth = lw, color = col  )  
-        #             ax.add_line(line)
-        #     if 'ring_label' in v and v['ring_label']:
-        #         bot = offset + self._ext_bottoms[l]
-        #         bot1 = offset + ( self._ext_bottoms[l+1] if l+1 in self._ext_bottoms else self._ext_bottoms[l] +
-        #                     (self._ext_max_height[l]*0.1 if l in self._ext_max_height else 0.1) )
-        #         off = (rpi2-self.total_plotted_degrees)*0.5
-        #         b = (bot+bot1)*0.5
-        #         s = -90 if 0.5*rpi < self.start_rotation < 1.5*rpi else 90
-        #         #rot = (self.start_rotation*360.0/rpi2 + s + off*360.0/rpi2 )%360.0
-        #         rot = (self.start_rotation*360.0/rpi2 + s )%360.0
-        #         fs = v['ring_label_font_size'] 
-        #         lcol = v['ring_label_color'] 
-        #         ax.text( self.start_rotation, b, v['ring_label'], rotation = rot,
-        #                  ha="center", va="center", fontsize = fs, color = lcol  )
+                    lw = float(v[p])
+                    col = v['ring_separator_color'] 
+                    line = lines.Line2D( linearized_circle, [bot]*len(linearized_circle), linewidth = lw, color = col  )  
+                    ax.add_line(line)
+            if 'ring_label' in v and v['ring_label']:
+                bot = offset + self._ext_bottoms[l]
+                bot1 = offset + ( self._ext_bottoms[l+1] if l+1 in self._ext_bottoms else self._ext_bottoms[l] +
+                            (self._ext_max_height[l]*0.1 if l in self._ext_max_height else 0.1) )
+                off = (rpi2-self.total_plotted_degrees)*0.5
+                b = (bot+bot1)*0.5
+                s = -90 if 0.5*rpi < self.start_rotation < 1.5*rpi else 90
+                #rot = (self.start_rotation*360.0/rpi2 + s + off*360.0/rpi2 )%360.0
+                rot = (self.start_rotation*360.0/rpi2 + s )%360.0
+                fs = v['ring_label_font_size'] 
+                lcol = v['ring_label_color'] 
+                ax.text( self.start_rotation, b, v['ring_label'], rotation = rot,
+                         ha="center", va="center", fontsize = fs, color = lcol  )
 
 
         print "Step 10"
 
-        # if hasattr(self,"title"):
-        #     # print "block 10"
-        #     # self.title = 'test block 10'
-        #     ax.set_title(self.title,fontdict = {'size':self.title_font_size})
+        if hasattr(self,"title"):
+            # print "block 10"
+            # self.title = 'test block 10'
+            ax.set_title(self.title,fontdict = {'size':self.title_font_size})
          
         #a,b = ax.get_ylim()
         ylim((0.0,self._tot_offset*1.075))
         
-        #ax.legend(  frameon = False, markerscale = 0  )
-        #for t in self._ext_key:
-        #ax.text( 0, 1, t )
+        # ax.legend(  frameon = False, markerscale = 0  )
+        # for t in self._ext_key:
+        # ax.text( 0, 1, t )
 
 
-        # if self._ext_key:
-        #     print "block 11"
-        #     #a = ax.legend( bbox_to_anchor=(.0, 1), loc = 'upper left', shadow=False, frameon = False, 
-        #     #           scatterpoints = 1, borderpad = 0, handlelength = 0, 
-        #     #           handletextpad = 0, markerscale = 0.0, ncol = 1,
-        #     #           labelspacing = 0.05,
-        #     #           prop = {'size':self.annotation_legend_font_size}
-        #     #        )
-        #     ll = [ax.scatter( 0.0, 0.0, s = 0)]*len(self._ext_key)
-        #     plt.figlegend( ll, sorted(self._ext_key), 'upper left',
-        #                    frameon = False, shadow=False, 
-        #                    scatterpoints = 1, #borderpad = 0, 
-        #                    handlelength = 0, markerscale = 0.0,
-        #                    handletextpad = 0.2, ncol = 1,
-        #                    labelspacing = 0.1,
-        #                    prop = {'size':self.annotation_legend_font_size}) 
-        # plt.figlegend(  handles, labels, loc,
-        #                 labelspacing = 0.1,
-        #                 frameon = False, markerscale = self.class_legend_marker_size,
-        #                 scatterpoints = 1,  handletextpad = 0.2,
-        #                 prop = {'size':self.class_legend_font_size})
+        if self._ext_key:
+            print "block 11"
+            #a = ax.legend( bbox_to_anchor=(.0, 1), loc = 'upper left', shadow=False, frameon = False, 
+            #           scatterpoints = 1, borderpad = 0, handlelength = 0, 
+            #           handletextpad = 0, markerscale = 0.0, ncol = 1,
+            #           labelspacing = 0.05,
+            #           prop = {'size':self.annotation_legend_font_size}
+            #        )
+            ll = [ax.scatter( 0.0, 0.0, s = 0)]*len(self._ext_key)
+            plt.figlegend( ll, sorted(self._ext_key), 'upper left',
+                           frameon = False, shadow=False, 
+                           scatterpoints = 1, #borderpad = 0, 
+                           handlelength = 0, markerscale = 0.0,
+                           handletextpad = 0.2, ncol = 1,
+                           labelspacing = 0.1,
+                           prop = {'size':self.annotation_legend_font_size}) 
+        plt.figlegend(  handles, labels, loc,
+                        labelspacing = 0.1,
+                        frameon = False, markerscale = self.class_legend_marker_size,
+                        scatterpoints = 1,  handletextpad = 0.2,
+                        prop = {'size':self.class_legend_font_size})
 
         # print "End plot"
 

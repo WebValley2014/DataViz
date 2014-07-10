@@ -79,7 +79,7 @@ if __name__ == '__main__':
 			continue
 		i = i.strip()
 		i = i.split("\t")
-		j = i[1].split(";")
+		j = i[1].split(":")
 		current = t
 		for k in range(0,len(j)):
 			# print k
