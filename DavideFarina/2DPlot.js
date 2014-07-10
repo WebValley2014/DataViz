@@ -3,26 +3,27 @@ var CHART = {
     go : function (r) {
         this._init(r);
         this._initChart();
-		this.updateAxis();
-		this.drawChart();
+	this.updateAxis();
+	this.drawChart();
     },
     _init : function (r) {
         this.cont_id = 'chart',
         this.width = 820,
         this.height = 500,
-        this.margin = { top : 10, right : 10, bottom : 100, left : 100 },
+        this.margin = { top : 30, right : 30, bottom : 100, left : 100 },
         this.inner_w = this.width - this.margin.left - this.margin.right;
         this.inner_h = this.height - this.margin.top - this.margin.bottom;
-		this.labels = [];
-		this.readFile = r;
-		this.OTUs = [];
-		this.statuslist = [];
-		this.file = [];
+	this.labels = [];
+	this.readFile = r;
+	this.OTUs = [];
+	this.statuslist = [];
+	this.file = [];
         this.data = [];
-		this.offset = 20;
-		this.colors = ["red", "green", "blue"];
+	this.offset = 20;
+	this.headers = [];
+	this.colors = ["red", "green", "blue"];
 
-		this.ElaborateFile();
+	this.ElaborateFile();
         
         this.x = d3.scale.ordinal().rangeRoundBands([0, this.inner_w]);
         this.y = d3.scale.linear().range([this.inner_h, 0]);
@@ -31,31 +32,33 @@ var CHART = {
     },
     _updateData : function (rowN) {
 	self = this;
-	console.log('update data got:' + rowN);
+	if(rowN < 2 || rowN > self.file.length)
+	    return false;
         var line = self.file[rowN].slice(1, -1);
 	//console.log(line);
 	for(var i = 1, j = 0; i < 30; i+= 3, j++)
 	    this.data[i] = line[j];
+	console.log(this.data);
+	return true;
     },
     ElaborateFile : function () {
-		this.lines = this.readFile.split("\n");
-		for(var i = 0; i < this.lines.length; i++) {
-			var line = this.lines[i];
-			if(i == 0) {
-				var headers = line.split("\t");
-				//console.log(headers);
-				for(var j = 1; j < 11; j++) { 
-					var h = headers[j];
-					//console.log(h);
-					//this.labels.push("A" + h);
-					this.labels.push(h);
-					//this.labels.push("B" + h);
-				}
-			}
-			this.file.push([]);
-			for(var j = 0; j < 12; j++)
-				this.file[i][j] = this.lines[i].split("\t")[j];
+	console.log(this.headers);
+	this.lines = this.readFile.split("\n");
+	for(var i = 0; i < this.lines.length; i++) {
+	    var line = this.lines[i];
+	   /* if(i == 0) {
+		//console.log(headers);
+		for(var j = 1; j < 11; j++) { 
+		    var h = this.headers[j];
+		    //console.log(h);
+		    //this.labels.push("A" + h);
+		    this.labels.push(h);
+		    //this.labels.push("B" + h);
 		}
+	    }*/
+	    // this.file.push([]);
+	    this.file[i] = line.split("\t");
+	}
 	for(var i = 0; i < 10; i++) {
 	    for(var j = 0; j < 3; j++) {
 		if(j == 0) 
@@ -66,16 +69,17 @@ var CHART = {
 		    this.data[i * 3 + j] = this._getSum(i, "0");
 	    }
 	}
-		//console.log(this.data.length);
-		//console.log(this.labels.length);
+	this._extractHeaders();
+	//console.log(this.data.length);
+	//console.log(this.labels.length);
     },
-	_getSum: function(column, which) {
-		var sum = 0;
-		for(var i = 2; i < this.file.length; i++)
-			if(this.file[i][11] == which)
-				sum += parseFloat(this.file[i][column + 1]);
-		return sum;
-	},
+    _getSum: function(column, which) {
+	var sum = 0;
+	for(var i = 2; i < this.file.length; i++)
+	    if(this.file[i][11] == which)
+		sum += parseFloat(this.file[i][column + 1]);
+	return sum;
+    },
     _initChart : function() {
         this.svg = d3.select('#' + this.cont_id)
             .append('svg')
@@ -87,10 +91,6 @@ var CHART = {
             .attr('fill', '#eee')
             .attr('stroke', '#222')
             .attr('stroke-width', 1)
-            .attr('width', 0)
-            .attr('height', 0)
-            .transition()
-            .duration(1400)
             .attr('height', this.height)
             .attr('width', this.width)
         ;
@@ -98,10 +98,17 @@ var CHART = {
             .attr('transform',
                   'translate(' + this.margin.left + ',' + this.margin.top + ')')
         ;
-		//set xAxis domain
-		this.x.domain(this.labels);
+	//set xAxis domain
+	this.x.domain(this.headers);
+	console.log(this.headers);
     },
-    
+    _extractHeaders: function() {
+	var headers = [];
+	for(i in this.file[1]) {
+	    headers.push(this.file[1][i].split(";").slice(-2).join(";"));
+	}
+	this.headers = headers.slice(1, -1);
+    },
     updateChart : function () {
         this._updateData();
         this._createAxis();
@@ -116,11 +123,20 @@ var CHART = {
             .attr('class', 'axis')
             .attr('transform', 'translate(0, ' + this.inner_h + ')')
             .call(xAxis)
+	    .append("text")
+	    .text("OTU id")
+	    .attr("transform", "translate(" + this.inner_w + ", 50)")
+	    .style("text-anchor", "end")
+
         ;
 
         this.graph.append('g')
             .attr('class', 'axis')
             .call(yAxis)
+	    .append("text")
+	    .text("Relative Abundance")
+	    .attr("transform", "rotate(-90) translate(0, -50)")
+	    .style("text-anchor", "end")
         ;
     },
     _removeAxis : function () {
@@ -128,7 +144,7 @@ var CHART = {
     },
     updateAxis : function (N) {
 	if (!N)
-	    N = 110;
+	    N = 100;
         this._removeAxis();
         //this.y.domain([0, d3.max(this.data)]);
 	this.y.domain([0, N]);
@@ -137,13 +153,13 @@ var CHART = {
     },
     
     drawChart : function () {
-		var self = this;
+	var self = this;
         var x = this.x;
         var y = this.y;
-		var labels = this.labels;
-		var getLabelIndex = this.getLabelIndex;
-		var getColor = this.getColor;
-		//console.log(this.colors);
+	var labels = this.headers;
+	var getLabelIndex = this.getLabelIndex;
+	var getColor = this.getColor;
+	//console.log(this.colors);
         bars = this.graph.selectAll('rect.mybar').data(this.data);
 
         bars.enter().append('rect')
@@ -157,7 +173,7 @@ var CHART = {
 	    .attr('opacity', 1)
         ;
 
-        bars.transition().delay(2000)	    
+        bars.transition()	    
             .attr('y', function (d) { return y(d); })
 	    .attr('height', function (d)
 	    	  { 
@@ -175,22 +191,23 @@ var CHART = {
 
         
     },
-	getOffset: function(dataIndex) {
-		if((dataIndex % 3) == 0)
-			return -this.offset;
-		if((dataIndex % 3) == 1)
-			return 0;
-		if((dataIndex % 3) == 2)
-			return this.offset;
-	},
-	getLabelIndex: function(dataIndex) {
-		return parseInt(Math.abs(dataIndex / 3));
-	},
-	getColor: function(dataIndex) {
-		return this.colors[dataIndex % 3];
-	},
+    getOffset: function(dataIndex) {
+	if((dataIndex % 3) == 0)
+	    return -this.offset;
+	if((dataIndex % 3) == 1)
+	    return 0;
+	if((dataIndex % 3) == 2)
+	    return this.offset;
+    },
+    getLabelIndex: function(dataIndex) {
+	return parseInt(Math.abs(dataIndex / 3));
+    },
+    getColor: function(dataIndex) {
+	return this.colors[dataIndex % 3];
+    },
     updateChart : function (rowN) {
-        this._updateData(rowN);
+	if(!(this._updateData(rowN)))
+	    return false;
         this.updateAxis();
         this.drawChart();
     }
@@ -245,8 +262,8 @@ var TABLE = {
 	    var row = document.createElement("tr");
 	    row.setAttribute('value', i);
 	    row.onclick = function() { 
-	    	d3.selectAll("tbody tr").attr("style", "background: none");
-	    	this.style.backgroundColor = "yellow";
+	    	d3.selectAll("tbody tr").classed("enlighted", false);
+	    	this.setAttribute("class", "enlighted");
 	    	//console.log(newI);
 	    	return CHART.updateChart(this.getAttribute('value'));
 	    };
@@ -254,6 +271,12 @@ var TABLE = {
 	    for(var j in line) {
 		var td = document.createElement("td");
 		td.innerHTML = line[j];
+		if(j == 0)
+		    td.setAttribute("class", "label");
+		else if(j > 0 && j < line.length -1)
+		    td.setAttribute("class", "value");
+		else
+		    td.setAttribute("class", "flag");
 		row.appendChild(td);
 	    }
 	    tbody.appendChild(row);
