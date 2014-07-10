@@ -224,7 +224,7 @@ datatablesPlusD3 = {
 	    .attr("y", -50)
 	    .attr("dy", ".71em")
 	    .style("text-anchor", "end")
-	    .text("Age");
+	    .text("Age")
 	;
 	
 	
