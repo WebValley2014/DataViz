@@ -64,10 +64,10 @@ var CHART = {
     },
     _init : function (r) {
         this.cont_id = 'chart',
-        //this.width = 820,
-        this.width = 1000,
+        this.width = 820,
+        //this.width = 1000,
         this.height = 500,
-        this.margin = { top : 30, right : 30, bottom : 100, left : 100 },
+        this.margin = { top : 60, right : 30, bottom : 100, left : 100 },
         this.inner_w = this.width - this.margin.left - this.margin.right;
         this.inner_h = this.height - this.margin.top - this.margin.bottom;
 	this.labels = [];
@@ -133,38 +133,13 @@ var CHART = {
         return tot;
     },
     _computeData : function () {
-        //for (var i = 0; i < this.xValues.length; i++
         // run on cols        
         for (var colN = 0; colN < this.xValues.length; colN++) {
-            console.log(colN);
-            
             this.data[colN *3] = this._getSumColFlag(colN, "0");
             this.data[colN *3 + 1] = 0;
             this.data[colN *3 + 2] = this._getSumColFlag(colN, "1");
             }
     },
-    
-    
-
-    //     for (var colN = 0; colN < this.xValues.length; colN++) {
-    //         for (var j = 0; j < 3; j++) {
-    //     	if (j == 0) 
-    //     	    this.data[colN * 3] = this._getColSumFlag(colN, "1");
-    //     	if (j == 1)
-    //     	    this.data[colN * 3 + j] = 0;
-    //     	if (j == 2)
-    //     	    this.data[colN * 3 + j] = this._getColSumFlag(colN, "0");
-    //         }
-    //     }
-    // },
-    // _getColSumFlag: function(column, which) {
-    //     var sum = 0;
-    //     for(var rowN = 2; i < this.file.length; rowN++)
-    //         if(this.file[i][-1] == which)
-    //     	sum += parseFloat(this.file[i][column + 1]);
-    //     return sum;
-    // },
-
     _initChart : function() {
         this.svg = d3.select('#' + this.cont_id)
             .append('svg')
@@ -179,6 +154,16 @@ var CHART = {
             .attr('height', this.height)
             .attr('width', this.width)
         ;
+        // add the title
+        this.svg.append("text")
+            .attr("x", (this.width / 2))
+            .attr("y", this.margin.top / 2)
+            .attr("text-anchor", "middle")  
+            .style("font-size", "20px") 
+            //.style("text-decoration", "underline")  
+            .text("Top Ranked Features")
+        ;
+
         this.graph = this.svg.append('g')
             .attr('transform',
                   'translate(' + this.margin.left + ',' + this.margin.top + ')')
