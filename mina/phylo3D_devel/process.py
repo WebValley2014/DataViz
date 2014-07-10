@@ -34,7 +34,7 @@ if __name__ == "__main__":
         i = i.split("\t")
 
         # recover real name
-        name = i[1].split(";")
+        name = i[1].split(":")
         alias["_" + i[0]] = name[-1]
 
 
