@@ -5,54 +5,62 @@
     <script type="text/javascript" src="2DPlot.js"></script>0
     <style type="text/css">
       .enlighted {
-      background: red;
+          background: red !important;
       }
+      .odd {
+          background: #A5C8C7;
+      }
+      /*
+      #xaxis .tick text {
+          transform: rotate(-90deg);
+          -webkit-transform: rotate(-90deg);
+          -ms-transform: rotate(-90deg);
+      }*/
     </style>
-	<script>
-		function ajaxRequest(){
-			var activexmodes=["Msxml2.XMLHTTP", "Microsoft.XMLHTTP"] //activeX versions to check for in IE
-			if (window.ActiveXObject){ //Test for support for ActiveXObject in IE first (as XMLHttpRequest in IE7 is broken)
-				for (var i=0; i<activexmodes.length; i++){
-				    try{
-				        return new ActiveXObject(activexmodes[i])
-				    }
-				    catch(e){
-			//suppress error
-				    }
-				}
-			}
-			else if (window.XMLHttpRequest) // if Mozilla, Safari etc
-				return new XMLHttpRequest()
-		 else
-		  return false
-		}
+    <script>
+      function ajaxRequest(){
+	  var activexmodes=["Msxml2.XMLHTTP", "Microsoft.XMLHTTP"] //activeX versions to check for in IE
+	  if (window.ActiveXObject){ //Test for support for ActiveXObject in IE first (as XMLHttpRequest in IE7 is broken)
+	      for (var i=0; i<activexmodes.length; i++){
+		  try{
+		      return new ActiveXObject(activexmodes[i])
+		  }
+		  catch(e){
+		      //suppress error
+		  }
+	      }
+	  }
+	  else if (window.XMLHttpRequest) // if Mozilla, Safari etc
+	      return new XMLHttpRequest()
+	  else
+	      return false
+      }
 
-		var r ;
-		var call = function(url) {
-			var a = new ajaxRequest ();
-
-			a.open("GET", url, false);
-			a.send(null);
-			r = a.responseText;
-			CHART.go(r);
-			TABLE.go();
-		}
-	</script>
-
-
+      var r ;
+      var call = function(url) {
+          var a = new ajaxRequest ();
+          
+          a.open("GET", url, false);
+          a.send(null);
+          r = a.responseText;
+          CHART.go(r);
+	  TABLE.go();
+      }
+    </script>
   </head>
   
-  <body onload="call('http://localhost/DavideFarina/antani2.csv')">
+  <!--body onload="call('http://localhost/DavideFarina/antani2.csv')"-->
+  <body onload="call('antani2.csv')">
     <div id="main">
       <h1>Chart</h1>
       
-		  <div id="chart">
-		  </div>
-		  <div id="data-table">
-		  </div>
-
-     </div>
+      <div id="chart">
+      </div>
+      <div id="data-table">
+      </div>
+      
+    </div>
   </body>
-
+  
 </html>
 
