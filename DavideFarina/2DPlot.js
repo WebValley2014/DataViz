@@ -60,7 +60,7 @@ var CHART = {
     go : function (r) {
         this._init(r);
         this._initChart();
-        this.updateChart(2);
+        this.updateChart(2); // starting with the first data row enlight
     },
     _init : function (r) {
         this.cont_id = 'chart',
@@ -294,8 +294,10 @@ var TABLE = {
 	    //console.log(this.headers[i]);
 	    var h = document.createElement("th");
 	    h.innerHTML = this.headers[i]
-            if (parseInt(i) > 0 && parseInt(i) < 11)
-                h.innerHTML += " (OTU #" + i + ")";
+            var j = parseInt(i);
+            if (j > 0 && j < 11)
+                var otuId = j-1;
+                h.innerHTML += " (OTU #" + otuId + ")";
 	    row.appendChild(h);
 	}
 	thead.appendChild(row);
@@ -306,8 +308,11 @@ var TABLE = {
 	    var line = this.file[i];
 	    var newI = i;
 	    var row = document.createElement("tr");
+            if (i == 2)
+                UTILS.setCSSClass(row, 'enlighted');
 	    row.setAttribute('value', i);
 
+            // set odd or even class for table visualization
             UTILS.setCSSClass(row, (i+1) % 2 ? 'odd' : 'even');
             
 	    row.onclick = function() {
