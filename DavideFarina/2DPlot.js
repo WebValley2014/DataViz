@@ -236,11 +236,11 @@ var CHART = {
 	    .attr('width', self.x.rangeBand() / 4)
 	    .attr('x', function (d, i) {
                 return self.x(self.xValues[self.getLabelIndex(i)]) + 
-                //return self.x(self.headers[self.getLabelIndex(i)]) + 
                     self.getOffset(i) + 
                     self.x.rangeBand() / 2 - 5; 
             })
 	    .attr('y', self.y(0))
+	    .attr('height', 0)
 	    .attr('fill', function (d, i) { return self.getColor(i);})
 	    .attr('stroke', 'grey')
 	    .attr('stroke-width', 1)
