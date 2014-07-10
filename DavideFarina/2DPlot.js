@@ -78,12 +78,17 @@ var CHART = {
         this.data = [];
 	this.offset = 20;
 	this.headers = []
-        this.xValues = d3.range(10);
+        this.xValues = []
 	this.colors = ["red", "green", "blue"];
 
 	this._elaborateFile();
+
         // store file headers (OTU ids) into this.headers
-	this._extractHeaders();
+	//
+
+        // now i can compute the data
+        //this._computeData();
+
         
         this.x = d3.scale.ordinal().rangeRoundBands([0, this.inner_w]);
         this.y = d3.scale.linear().range([this.inner_h, 0]);
@@ -94,35 +99,72 @@ var CHART = {
 	    return false;
         var line = self.file[rowN].slice(1, -1);
 	//console.log(line);
-	for(var i = 1, j = 0; i < 30; i+= 3, j++)
+	for(var i = 1, j = 0; i < self.xValues.length*3; i+= 3, j++)
 	    this.data[i] = line[j];
 	//console.log(this.data);
 	return true;
     },
     _elaborateFile : function () {
-	//console.log(this.headers);
+        // organize raw file data as follows:
+        // - this.files is an array with a list of rows
+        // - each this.files element (a row) is an array of numbers
 	this.lines = this.readFile.split("\n");
 	for (var i = 0; i < this.lines.length; i++) {
 	    this.file[i] = this.lines[i].split("\t");
 	}
-	for (var i = 0; i < 10; i++) {
-	    for (var j = 0; j < 3; j++) {
-		if (j == 0) 
-		    this.data[i * 3] = this._getSum(i, "1");
-		if (j == 1)
-		    this.data[i * 3 + j] = 0;
-		if (j == 2)
-		    this.data[i * 3 + j] = this._getSum(i, "0");
-	    }
-	}
+        
+        // set xValues
+        this.xValues = d3.range(this.file[0].length -2);
+
+        // extract Headers
+        this._extractHeaders();
+        
+        // compute the unmutable part of data of the datataset
+        this._computeData();
+
     },
-    _getSum: function(column, which) {
-	var sum = 0;
-	for(var i = 2; i < this.file.length; i++)
-	    if(this.file[i][11] == which)
-		sum += parseFloat(this.file[i][column + 1]);
-	return sum;
+    _getSumColFlag : function(column, which) {
+        var tot = 0;        
+        var colOffset = 1; // the first column is the taxonomy headers
+        for (var rowN = 0; rowN < this.file.length; rowN++) {
+            if (this.file[rowN][this.file[rowN].length-1] == which)
+                tot+= parseFloat(this.file[rowN][column+colOffset]);
+        }
+        return tot;
     },
+    _computeData : function () {
+        //for (var i = 0; i < this.xValues.length; i++
+        // run on cols        
+        for (var colN = 0; colN < this.xValues.length; colN++) {
+            console.log(colN);
+            
+            this.data[colN *3] = this._getSumColFlag(colN, "0");
+            this.data[colN *3 + 1] = 0;
+            this.data[colN *3 + 2] = this._getSumColFlag(colN, "1");
+            }
+    },
+    
+    
+
+    //     for (var colN = 0; colN < this.xValues.length; colN++) {
+    //         for (var j = 0; j < 3; j++) {
+    //     	if (j == 0) 
+    //     	    this.data[colN * 3] = this._getColSumFlag(colN, "1");
+    //     	if (j == 1)
+    //     	    this.data[colN * 3 + j] = 0;
+    //     	if (j == 2)
+    //     	    this.data[colN * 3 + j] = this._getColSumFlag(colN, "0");
+    //         }
+    //     }
+    // },
+    // _getColSumFlag: function(column, which) {
+    //     var sum = 0;
+    //     for(var rowN = 2; i < this.file.length; rowN++)
+    //         if(this.file[i][-1] == which)
+    //     	sum += parseFloat(this.file[i][column + 1]);
+    //     return sum;
+    // },
+
     _initChart : function() {
         this.svg = d3.select('#' + this.cont_id)
             .append('svg')
@@ -187,8 +229,8 @@ var CHART = {
 	if (!N)
 	    N = 100;
         this._removeAxis();
-        //this.y.domain([0, d3.max(this.data)]);
-	this.y.domain([0, N]);
+        this.y.domain([0, d3.max(this.data)]);
+	//this.y.domain([0, N]);
         //this.x.domain(this.headers);
         this.x.domain(this.xValues);
         this._createAxis();
@@ -201,17 +243,13 @@ var CHART = {
         bars = this.graph.selectAll('rect.mybar').data(this.data);
         //        console.log(this.data);
         
-        bars.enter().append('rect')
-	    //.attr('class', 'mybar')
+        bars.enter()
+            .append('rect')
             .attr('class', function (d, i) {
                 return 'mybar ' + 'bar' + parseInt(i/3);
             })
 	    .attr('width', self.x.rangeBand() / 4)
 	    .attr('x', function (d, i) {
-                //DEBUG
-                //console.log(i + " " + d);
-                //console.log('offset ' + self.getOffset(i));
-                
                 return self.x(self.xValues[self.getLabelIndex(i)]) + 
                 //return self.x(self.headers[self.getLabelIndex(i)]) + 
                     self.getOffset(i) + 
@@ -225,11 +263,19 @@ var CHART = {
         ;
 
         bars.transition()	    
-            .attr('y', function (d) { return self.y(d); })
+            .attr('y', function (d) {
+                //DEBUG
+                if (d == undefined) d = 0;
+                return self.y(d); 
+            })
 	    .attr('height', function (d) {
+                //DEBUG
+                //console.log(d);
+                if (d == undefined) d = 0;
+                //console.log('now' + d);
+                
 	    	return self.inner_h - self.y(d);
-	    }
-	    	 )
+	    })
         ;
         
         bars.exit()
@@ -295,7 +341,7 @@ var TABLE = {
 	    var h = document.createElement("th");
 	    h.innerHTML = this.headers[i]
             var j = parseInt(i);
-            if (j > 0 && j < 11)
+            if (j > 0 && j < CHART.xValues.length+1)
                 var otuId = j-1;
                 h.innerHTML += " (OTU #" + otuId + ")";
 	    row.appendChild(h);
