@@ -1,3 +1,6 @@
+import matplotlib as mpl
+mpl.use('Agg') # commet for windows visualization
+
 import numpy as np
 import matplotlib.pyplot as plt
 import random
