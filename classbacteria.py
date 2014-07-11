@@ -253,7 +253,7 @@ class BacteriaGraph(object):
             (str)
             output filename. Defaults to `testGraph.png'.
         """
-	    # manage args
+	# manage args
         vCol = kwargs.get('vCol')
         minCol = kwargs.get('minCol')
         maxCol = kwargs.get('maxCol')
@@ -261,6 +261,8 @@ class BacteriaGraph(object):
         color = kwargs.get('color', 'red')
         outDir = kwargs.get('outDir', 'graphs') 
         outFile = kwargs.get('outFile', 'testGraph.png')
+        filename = kwargs.get('filename', 'testGraph')
+	#filename = ''
 
         # managment of the 'xlim=None'
         if xLim == None:
@@ -278,24 +280,19 @@ class BacteriaGraph(object):
         filePath = os.path.join(outDir, outFile)
 
         # print the png image using matplotlib
-	plt.ylim((0, 1))
-	if xLim > 25:
-        	plt.xscale("log")
-		plt.xlim((0.1, xLim + 1))
-		plt.plot(xArray, vArray, color=color)
-        	plt.plot(xArray, minArray, color="grey")
-        	plt.plot(xArray, maxArray, color="grey")
-       		plt.savefig(filePath, format="png")
-        	plt.clf()
-	else:
-		plt.xlim((0, xLim + 1))
-        	plt.plot(xArray, vArray, color=color)
-        	plt.plot(xArray, minArray, color="grey")
-        	plt.plot(xArray, maxArray, color="grey")
-        	plt.savefig(filePath, format="png")
-        	plt.clf()
+        plt.ylim((0, 1))
+        plt.xscale("log")
+        plt.xlim((0.1, xLim + 1))
+        plt.plot(xArray, vArray, color=color)
+        plt.plot(xArray, minArray, color='#C0C0C0')
+        plt.plot(xArray, maxArray, color='#C0C0C0')
+        #plt.title(filename + ' graphic')
+        plt.xlabel('features')
+        plt.ylabel(filename)
+        plt.savefig(filePath, format="png")
+        plt.clf()
 
-    def printAllPlots(self):
+    def printAllPlots(self, outputPath):
         """
         Define a dict with the configuration of the plots I want to
         print on a graph, and call many times self.printSinglePlot
@@ -307,7 +304,7 @@ class BacteriaGraph(object):
                    'filename'   : "MCC",
                    'outFile'    : "",
                    'color'      : "blue",
-	               'xLim'	    : None
+	           'xLim'       : None
                    },
 	              {'vCol'       : 4,
                    'minCol'     : 5,
@@ -315,7 +312,7 @@ class BacteriaGraph(object):
                    'filename'   : "SENS",
                    'outFile'    : "",
                    'color'      : "red",
-	               'xLim'	    : None
+	           'xLim'       : None
                    },          
 	              {'vCol'       : 7,
                    'minCol'     : 8,
@@ -323,7 +320,7 @@ class BacteriaGraph(object):
                    'filename'   : "SPEC",
                    'outFile'    : "",
                    'color'      : "green",
-	               'xLim'	    : None
+	           'xLim'       : None
                    },
 	              {'vCol'       : 10,
                    'minCol'     : 11,
@@ -331,7 +328,7 @@ class BacteriaGraph(object):
                    'filename'   : "PPV",
                    'outFile'    : "",
                    'color'      : "yellow",
-	               'xLim'	    : None
+	           'xLim'	    : None
                    },
 	              {'vCol'       : 13,
                    'minCol'     : 14,
@@ -339,15 +336,15 @@ class BacteriaGraph(object):
                    'filename'   : "NPV",
                    'outFile'    : "",
                    'color'      : "purple",
-	               'xLim'	    : None
+	           'xLim'	: None
                    },
-	              {'vCol'       : 16,
+	           {'vCol'       : 16,
                    'minCol'     : 17,
                    'maxCol'     : 18,
                    'filename'   : "AUC",
                    'outFile'    : "",
                    'color'      : "orange",
-	               'xLim'	    : None
+	           'xLim'	: None
                    },
 	              {'vCol'       : 19,
                    'minCol'     : 20,
@@ -355,7 +352,7 @@ class BacteriaGraph(object):
                    'filename'   : "ACC",
                    'outFile'    : "",
                    'color'      : "brown",
-	               'xLim'	    : None
+	           'xLim'	: None
                    }]
 	allLeng = self.metrics.T
 	allLeng = allLeng[0]
@@ -364,8 +361,9 @@ class BacteriaGraph(object):
         for conf in myConf:
             for xLim in [10, 100, 1000, allLeng]:
                 conf['xLim'] = xLim
-                filename = "{0}_{1}.png".format(conf['filename'], xLim)
+                filename = "{0}_{1}.png".format(conf['filename'], int(xLim))
                 conf['outFile'] = filename
+		conf['outDir'] = outputPath
                 self.printSinglePlot(**conf)
 
 '''
@@ -394,7 +392,7 @@ class BacteriaGraph(object):
 if __name__ == "__main__":
 
 	a=BacteriaGraph('fakedata/percentagebacteria.txt', 'fakedata/P2', 'fakedata/metrics.txt')
-	a.printAllPlots()
+	a.printAllPlots('vducduhjh')
 	#a.metricsplot(2)
 	#a.metricsplot(4)
 	#a.metricsplot(1)
