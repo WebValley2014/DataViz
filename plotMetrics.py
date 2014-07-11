@@ -103,14 +103,12 @@ class BacteriaGraph(object):
 
         # print the png image using matplotlib
         plt.ylim((0, 1))
-        plt.xscale("log")
-        plt.xlim((0.1, xLim + 1))
+        plt.xlim((0, xLim + 1))
         plt.plot(xArray, vArray, color=color)
         plt.plot(xArray, minArray, color='#C0C0C0')
         plt.plot(xArray, maxArray, color='#C0C0C0')
-        plt.title(filename + ' graphic')
-        plt.xlabel('repetitions')
-        plt.ylabel('prrecision')
+        plt.xlabel('number of features')
+        plt.ylabel(filename)
         plt.savefig(filePath, format="png")
         plt.clf()
 
